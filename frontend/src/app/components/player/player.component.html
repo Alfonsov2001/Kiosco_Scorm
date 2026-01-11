@@ -1,0 +1,16 @@
+<div class="player-container">
+  
+  <div class="header-bar">
+    <h2>Reproduciendo: {{ curso?.titulo }}</h2>
+    <button class="btn-salir" (click)="volver()">❌ Salir</button>
+  </div>
+
+  <div class="iframe-container">
+    <iframe 
+      [src]="urlSegura" 
+      frameborder="0" 
+      allowfullscreen>
+    </iframe>
+  </div>
+
+</div>

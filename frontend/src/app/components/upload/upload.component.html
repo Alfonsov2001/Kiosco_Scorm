@@ -1,0 +1,25 @@
+<div class="container">
+  <h2>📤 Subir Nuevo Curso SCORM</h2>
+  
+  <div class="form-group">
+    <label>Título del Curso:</label>
+    <input type="text" [(ngModel)]="titulo" placeholder="Ej: Prevención de Riesgos">
+  </div>
+
+  <div class="form-group">
+    <label>Descripción:</label>
+    <textarea [(ngModel)]="descripcion" placeholder="Breve resumen..."></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Archivo ZIP (SCORM):</label>
+    <input type="file" (change)="onFileSelected($event)" accept=".zip">
+  </div>
+
+  <div class="buttons">
+    <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+    <button class="btn-subir" (click)="subir()">Subir Curso</button>
+  </div>
+
+  <p *ngIf="mensaje" [class.error]="esError" class="status-msg">{{ mensaje }}</p>
+</div>

@@ -1,0 +1,55 @@
+/* Contenedor principal que ocupa toda la altura de la pantalla */
+.player-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 100% del Viewport Height (altura de la ventana) */
+  margin: 0;
+  padding: 0;
+  background-color: #000; /* Fondo negro cine */
+}
+
+/* La barra de arriba con el título y el botón */
+.header-bar {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px; /* Altura fija para la barra */
+}
+
+.header-bar h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.btn-salir {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-salir:hover {
+  background-color: #a71d2a;
+}
+
+/* El IFRAME donde se ve el curso */
+.iframe-container {
+  flex-grow: 1; /* Ocupa todo el espacio restante debajo de la barra */
+  width: 100%;
+  background-color: white;
+  overflow: hidden;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}

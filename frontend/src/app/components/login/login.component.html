@@ -1,0 +1,17 @@
+<div class="login-container">
+  <div class="card">
+    <h1>Bienvenido</h1>
+    <p>Introduce tu correo para acceder a los cursos.</p>
+    
+    <input 
+      type="email" 
+      [(ngModel)]="email" 
+      placeholder="usuario@ejemplo.com"
+      (keyup.enter)="entrar()" 
+    />
+    
+    <button class="btn btn-primary full-width" (click)="entrar()">
+      Acceder
+    </button>
+  </div>
+</div>

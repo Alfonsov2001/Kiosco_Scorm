@@ -1,0 +1,8 @@
+.container { max-width: 500px; margin: 2rem auto; padding: 2rem; border: 1px solid #ccc; border-radius: 8px; font-family: sans-serif; }
+.form-group { margin-bottom: 1rem; display: flex; flex-direction: column; }
+input, textarea { padding: 8px; margin-top: 5px; }
+.buttons { display: flex; gap: 10px; margin-top: 20px; }
+.btn-subir { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+.btn-cancelar { background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+.status-msg { margin-top: 15px; font-weight: bold; color: green; }
+.error { color: red; }

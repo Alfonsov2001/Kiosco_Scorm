@@ -1,0 +1,19 @@
+<header class="top-bar">
+  <span>Hola, <strong>{{ usuario?.email }}</strong></span>
+  <button class="btn btn-danger" (click)="salir()">Cerrar Sesión</button>
+  <button class="btn-primary" style="margin-right: 10px;" (click)="irSubir()">➕ Subir Curso</button>
+</header>
+
+<main class="container">
+  <h2>Cursos Disponibles</h2>
+  
+  <div class="grid">
+    <div class="curso-card" *ngFor="let curso of cursos">
+      <h3>{{ curso.titulo }}</h3>
+      <p>{{ curso.descripcion }}</p>
+      <button class="btn btn-primary full-width" (click)="irAlCurso(curso)">
+        Comenzar Curso
+      </button>
+    </div>
+  </div>
+</main>
