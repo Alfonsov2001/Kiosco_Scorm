@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE apartados SYSTEM "../../../../config/recursos.dtd">
+<apartados>
+  <apartado id="ap01010401">
+    <recursos>
+      <recurso nombre="q_que_hacemos_si_alguien_tiene_coronavirus_en_casa.mp4">
+        <tipo>video</tipo>
+      </recurso>
+    </recursos>
+  </apartado>
+  <apartado id="ap01020201">
+    <recursos>
+      <recurso nombre="q_img001_1.png">
+        <tipo>imagen</tipo>
+      </recurso>
+    </recursos>
+  </apartado>
+</apartados>
