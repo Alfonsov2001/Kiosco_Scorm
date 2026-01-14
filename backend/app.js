@@ -13,8 +13,7 @@ app.use(cors());
 app.use(express.json({ limit: '1000mb' }));
 app.use(express.urlencoded({ limit: '1000mb', extended: true }));
 
-// --- STATIC FILES ---
-// Servimos la carpeta public/cursos para que se pueda acceder a los scorm descomprimidos
+
 app.use('/cursos', express.static(path.join(__dirname, 'public/cursos')));
 
 // --- ROUTES ---
