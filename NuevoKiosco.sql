@@ -9,6 +9,9 @@ CREATE TABLE usuarios (
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- INSERCIÓN DEL USUARIO (Aquí está el cambio solicitado)
+INSERT INTO usuarios (email) VALUES ('alfon@gmail.com');
+
 -- 2. Tabla de Cursos SCORM
 -- Aquí guardaremos la información del paquete que subas.
 CREATE TABLE cursos (
