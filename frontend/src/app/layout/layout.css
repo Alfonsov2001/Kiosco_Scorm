@@ -1,0 +1,29 @@
+.page-container{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* centro: sidebar + contenido */
+.main-layout{
+  display:flex;
+  flex:1;
+  align-items:stretch;
+  min-height:0;
+}
+
+/* sidebar: columna fija */
+app-sidebar{
+  width:260px;
+  flex-shrink:0;
+  position:relative; /* IMPORTANT: evita offsets raros */
+  z-index:1;
+}
+
+/* contenido: columna derecha */
+.content-area{
+  flex:1;
+  min-width:0;       /* CLAVE para que no se meta debajo */
+  padding:16px;
+  overflow:visible;  /* sin scroll interno */
+}

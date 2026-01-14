@@ -22,7 +22,7 @@ export class LoginComponent {
     this.dataService.login(this.email).subscribe({
       next: (user: any) => { 
         this.dataService.usuarioActual = user;
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard-profesor']);
       },
       error: () => alert('Error al conectar con el servidor')
     });

@@ -50,4 +50,30 @@
     border-bottom: 4px solid black;
     height: auto;
   }
+
+  :host{
+  display:block;
+  position:relative !important;
+}
+
+.sidebar-container{
+  position:relative !important;
+  width:100%;
+}
+
+/* evita solapes por absolute/float */
+.sidebar-container *{
+  position:static;
+  float:none;
+}
+
+/* lista vertical simple */
+.sidebar-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+  box-sizing:border-box;
+}
+
 }

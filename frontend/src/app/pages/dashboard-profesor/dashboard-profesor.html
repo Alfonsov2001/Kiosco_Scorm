@@ -1,0 +1,68 @@
+<section class="dash">
+  
+  <!-- ===== TOOLBAR: categorías + búsqueda ===== -->
+  <div class="toolbar">
+    <div class="tool-group">
+      <img src="assets/images/icono_menu.png" class="tiny-icon" alt="v" />
+      <span>CATEGORÍAS</span>
+    </div>
+
+    <div class="tool-group search-group">
+      <select
+        class="search-input"
+        [(ngModel)]="categoriaSeleccionada"
+        (change)="aplicarFiltros()"
+      >
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let c of categorias" [value]="c.id">
+          {{ c.nombre }}
+        </option>
+      </select>
+
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar curso por título..."
+        [(ngModel)]="searchTitulo"
+        (input)="aplicarFiltros()"
+      />
+    </div>
+  </div>
+
+
+
+  <!-- ===== SUBIDA SCORM ===== -->
+  <div class="card">
+    
+    <app-upload></app-upload>
+  </div>
+
+  <!-- ===== LISTA DE CURSOS (FILTRADA) ===== -->
+  <div class="card">
+    <h2>Cursos</h2>
+
+    <div *ngIf="cargando">Cargando cursos…</div>
+    <div *ngIf="!cargando && cursosFiltrados.length === 0">
+      No hay cursos para esa categoría / búsqueda.
+    </div>
+
+    <table *ngIf="!cargando && cursosFiltrados.length > 0" class="table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Subido</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of cursosFiltrados">
+          <td>{{ c.titulo }}</td>
+          <td>{{ c.fecha_subida | date:'short' }}</td>
+          <td class="right">
+            <button (click)="abrir(c.id)">Abrir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
