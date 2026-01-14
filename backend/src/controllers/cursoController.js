@@ -2,83 +2,109 @@ const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
-const db = require('../config/db');
+const Curso = require('../models/Curso');
+const Usuario = require('../models/Usuario');
+const { getHtmlFiles, extractInternalZips } = require('../utils/fileHelper');
 
 exports.subirCurso = async (req, res) => {
     try {
+        console.log('\n--- 🚀 INICIANDO SUBIDA DE CURSO (MVC) ---');
         if (!req.file) {
             return res.status(400).json({ mensaje: 'No se subió ningún archivo' });
         }
 
-        // 1. Datos iniciales
-        // req.file viene gracias a Multer (lo configuraremos en la ruta)
-        const rutaZip = req.file.path;
-        const nombreCarpeta = path.parse(req.file.filename).name; // Nombre único
+        const zipPath = req.file.path;
+        const nombreCarpeta = 'scorm-' + Date.now();
+        // Ajustamos la ruta para que coincida con donde backend/app.js sirve los estáticos
+        // Estamos en backend/src/controllers -> ../../public/cursos
         const rutaDescompresion = path.join(__dirname, '../../public/cursos', nombreCarpeta);
 
-        // 2. Descomprimir el ZIP
-        const zip = new AdmZip(rutaZip);
+        // 1. Descomprimir el ZIP
+        console.log('📦 1. Descomprimiendo archivo principal...');
+        const zip = new AdmZip(zipPath);
         zip.extractAllTo(rutaDescompresion, true);
 
-        // 3. Buscar y leer el imsmanifest.xml
-        const rutaManifest = path.join(rutaDescompresion, 'imsmanifest.xml');
-        
-        if (!fs.existsSync(rutaManifest)) {
-            // Si no hay manifest, borramos todo porque no es un SCORM válido
-            fs.rmSync(rutaDescompresion, { recursive: true, force: true });
-            fs.unlinkSync(rutaZip); 
-            return res.status(400).json({ mensaje: 'El archivo no es un paquete SCORM válido (falta imsmanifest.xml)' });
-        }
+        // 2. Buscando paquetes internos
+        console.log('🔍 2. Buscando paquetes internos...');
+        extractInternalZips(rutaDescompresion);
 
-        // 4. Parsear el XML para encontrar el archivo de inicio (launch file)
-        const xmlContent = fs.readFileSync(rutaManifest, 'utf-8');
-        const parser = new xml2js.Parser();
-        const result = await parser.parseStringPromise(xmlContent);
-
-        // NOTA: Navegar por el XML de SCORM es un poco feo.
-        // Buscamos dentro de <resources> el primer <resource> que tenga un "href"
-        const resources = result.manifest.resources[0].resource;
+        // 3. ESTRATEGIA MIXTA: PRIMERO SCORM MANIFEST, LUEGO BRUTE FORCE
         let puntoEntrada = '';
+        const rutaManifest = path.join(rutaDescompresion, 'imsmanifest.xml');
 
-        // Buscamos el primer recurso que sea 'webcontent' y tenga href
-        const resourcePrincipal = resources.find(r => r.$ && r.$.href);
-        
-        if (resourcePrincipal) {
-            puntoEntrada = resourcePrincipal.$.href;
-        } else {
-            // Fallback: si no encontramos nada obvio, buscamos index.html
-            puntoEntrada = 'index.html';
+        if (fs.existsSync(rutaManifest)) {
+            console.log('📜 Manifest encontrado. Intentando parsear SCORM...');
+            try {
+                const xmlContent = fs.readFileSync(rutaManifest, 'utf-8');
+                const parser = new xml2js.Parser();
+                const result = await parser.parseStringPromise(xmlContent);
+                const resources = result.manifest.resources[0].resource;
+                const resourcePrincipal = resources.find(r => r.$ && r.$.href);
+                if (resourcePrincipal) {
+                    puntoEntrada = resourcePrincipal.$.href;
+                    console.log('✅ SCORM Entry Point encontrado en manifest:', puntoEntrada);
+                }
+            } catch (err) {
+                console.warn('⚠️ Error parseando manifest, probando fuerza bruta...', err.message);
+            }
         }
 
-        // 5. Guardar en Base de Datos
-        // La ruta que guardamos es RELATIVA para que Angular pueda acceder: /cursos/nombre-carpeta
-        const rutaWeb = `/cursos/${nombreCarpeta}`;
-        
-        const [insertResult] = await db.query(
-            'INSERT INTO cursos (titulo, descripcion, ruta_carpeta, punto_entrada) VALUES (?, ?, ?, ?)',
-            [req.body.titulo || nombreCarpeta, 'Curso SCORM importado', rutaWeb, puntoEntrada]
-        );
+        if (!puntoEntrada) {
+            console.log('🕵️‍♂️ Manifest no útil o inexistente. Usando búsqueda heurística de HTMLs...');
+            const todosLosHtml = getHtmlFiles(rutaDescompresion, [], rutaDescompresion);
 
-        // 6. Limpieza: Borrar el ZIP original (ya está descomprimido)
-        fs.unlinkSync(rutaZip);
+            if (todosLosHtml.length === 0) {
+                // Limpieza en error
+                fs.rmSync(rutaDescompresion, { recursive: true, force: true });
+                fs.unlinkSync(zipPath);
+                return res.status(400).json({ mensaje: 'NO SE ENCONTRÓ NINGÚN HTML (ni en raíz ni en zips internos).' });
+            }
+
+            const prioritarios = ['index.html', 'story.html', 'player.html', 'launcher.html'];
+
+            // A) Buscar un index.html en la raíz
+            puntoEntrada = todosLosHtml.find(f => prioritarios.includes(f));
+
+            // B) Buscar index.html dentro de carpetas
+            if (!puntoEntrada) {
+                puntoEntrada = todosLosHtml.find(f => {
+                    const nombre = f.split('/').pop();
+                    return prioritarios.includes(nombre);
+                });
+            }
+
+            // C) Cualquiera
+            if (!puntoEntrada) puntoEntrada = todosLosHtml[0];
+            console.log('🎯 Punto de entrada encontrado por heurística:', puntoEntrada);
+        }
+
+        // 4. Guardar en BD usando MODELO
+        const rutaWeb = `/cursos/${nombreCarpeta}`;
+        const nuevoCurso = await Curso.create({
+            titulo: req.body.titulo || nombreCarpeta,
+            descripcion: req.body.descripcion || 'Curso SCORM subido',
+            ruta_carpeta: rutaWeb,
+            punto_entrada: puntoEntrada
+        });
+
+        // 5. Limpieza zip original
+        fs.unlinkSync(zipPath);
 
         res.json({
-            mensaje: 'Curso subido y procesado con éxito',
-            cursoId: insertResult.insertId,
-            ruta: rutaWeb,
-            inicio: puntoEntrada
+            mensaje: 'Curso subido correctamente',
+            cursoId: nuevoCurso.insertId
         });
 
     } catch (error) {
-        console.error(error);
+        console.error('❌ ERROR:', error);
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
         res.status(500).json({ mensaje: 'Error procesando el curso', error: error.message });
     }
 };
 
-// Función extra para listar cursos (nos servirá luego)
 exports.obtenerCursos = async (req, res) => {
     try {
-        const [cursos] = await db.query('SELECT * FROM cursos');
+        const cursos = await Curso.getAll();
         res.json(cursos);
     } catch (error) {
         res.status(500).json({ mensaje: 'Error obteniendo cursos' });
@@ -90,17 +116,13 @@ exports.loginUsuario = async (req, res) => {
     if (!email) return res.status(400).json({ mensaje: 'Email requerido' });
 
     try {
-        // Buscamos si existe
-        let [users] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
-        
-        if (users.length === 0) {
-            // Si no existe, lo creamos automáticamente (Login sin registro previo)
-            const [result] = await db.query('INSERT INTO usuarios (email) VALUES (?)', [email]);
-            users = [{ id: result.insertId, email: email }];
+        let usuario = await Usuario.findByEmail(email);
+
+        if (!usuario) {
+            usuario = await Usuario.create({ email });
         }
 
-        // Devolvemos el usuario
-        res.json(users[0]);
+        res.json(usuario);
     } catch (error) {
         res.status(500).json({ mensaje: 'Error en login', error });
     }

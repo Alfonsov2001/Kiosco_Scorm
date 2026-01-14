@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class DataService {
   // 1. CAMBIO IMPORTANTE: Apuntamos a la raíz del servidor, no a /api/cursos
   private baseUrl = 'http://localhost:3000';
-  
+
   public usuarioActual: any = null;
   public cursoActual: any;
 
@@ -27,13 +27,14 @@ export class DataService {
   }
 
   subirCurso(titulo: string, descripcion: string, archivo: File): Observable<any> {
-      const formData = new FormData();
-      formData.append('titulo', titulo);
-      formData.append('descripcion', descripcion);
-      formData.append('file', archivo); 
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    formData.append('file', archivo);
 
-      // Ruta correcta: localhost:3000/upload
-      // (Coincide con app.post('/upload'...) de tu backend)
-      return this.http.post(`${this.baseUrl}/upload`, formData);
+    // Ruta correcta: localhost:3000/api/cursos/upload
+    // (Coincide con router.post('/upload') montado en /api/cursos)
+    return this.http.post(`${this.baseUrl}/api/cursos/upload`, formData);
+
   }
 }
