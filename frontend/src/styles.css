@@ -1,1 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+
+/* Variables Globales de Colores */
+:root {
+  --primary-teal: #338ea3;
+  --secondary-bg: #d2d8e7;
+  --dark-panel: #393848;
+  --text-dark: #333;
+}
+
+/* Reset básico */
+html, body { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Roboto, sans-serif; }/* You can add global styles to this file, and also import other style files */
+

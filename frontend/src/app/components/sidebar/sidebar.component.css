@@ -1,0 +1,53 @@
+/* Importante: :host permite al componente tener altura propia */
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  width: 280px;
+  height: 100%; /* Ocupa toda la altura que le dé el padre */
+  background-color: #b0c4de;
+  border-right: 4px solid black;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  background-color: #d1d5db;
+  text-align: center;
+  padding: 1rem;
+  border-bottom: 2px solid black;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+
+.sidebar-content {
+  background-color: var(--primary-teal);
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.course-thumbnail img {
+  width: 100%;
+  height: auto;
+  border: 1px solid white;
+  display: block;
+}
+
+/* Responsivo: Si la pantalla es pequeña, el sidebar ocupa todo el ancho */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 4px solid black;
+    height: auto;
+  }
+}

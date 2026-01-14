@@ -1,0 +1,25 @@
+.main-footer {
+  background-color: var(--primary-teal);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.9rem;
+}
+
+.developers {
+  margin-right: 300px;
+  text-align:center;
+}
+
+.developers ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.copyright {
+  margin-left: 300px;
+  margin-bottom: 40px;
+}
