@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { UploadComponent } from '../../components/upload/upload.component';
+import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-profesor',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule,UploadComponent,FormsModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, UploadComponent, FormsModule],
   templateUrl: './dashboard-profesor.html',
   styleUrls: ['./dashboard-profesor.css'],
 })
@@ -20,20 +21,28 @@ export class DashboardProfesor implements OnInit {
   private api = 'http://localhost:3000/api';
 
   //Toolbar filtro categorias--modificar cuadno se cree en la bd
-  categorias: { id: string; nombre: string }[] = [
-    { id: '', nombre: 'Todas' },
-    { id: 'scorm', nombre: 'SCORM' },
-    { id: 'prevencion', nombre: 'Prevención' },
-    { id: 'calidad', nombre: 'Calidad' },
-  ];
+  //Toolbar filtro categorias
+  categorias: any[] = [];
   categoriaSeleccionada = '';
   searchTitulo = '';
+  cursoSeleccionado: any = null;
 
-
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private dataService: DataService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.recargar();
+    this.cargarCategorias();
+  }
+
+  cargarCategorias() {
+    this.dataService.getCategorias().subscribe({
+      next: (data) => {
+        console.log('✅ DashboardProfesor - Categorías cargadas:', data);
+        this.categorias = data || [];
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('❌ Error cargando categorías:', err)
+    });
   }
 
   recargar(): void {
@@ -61,16 +70,29 @@ export class DashboardProfesor implements OnInit {
     this.cursosFiltrados = (this.cursos || []).filter((c) => {
       const titulo = String(c.titulo || '').toLowerCase();
       const matchTitulo = !q || titulo.includes(q);
-
-      // Categorías todavía no vienen de BD.
       // Cuando las tengas, tu API debería devolver c.categoria_id.
-      const matchCategoria = !cat || String(c.categoria_id || '') === cat;
-
+      // Comparacion laxa por si vienen como string/number
+      const matchCategoria = !cat || c.categoria_id == cat;
       return matchTitulo && matchCategoria;
     });
   }
 
-  abrir(id: number): void {
-    this.router.navigate(['/player', id]);
+  verDetalle(curso: any): void {
+    this.cursoSeleccionado = curso;
+  }
+
+  cerrarDetalle(): void {
+    this.cursoSeleccionado = null;
+  }
+
+  iniciarCurso(curso: any): void {
+    // Aquí luego implementaremos "continuar desde donde se quedó"
+    // Por ahora, navegación normal
+    this.router.navigate(['/player', curso.id]);
+  }
+
+  onCursoSubido(): void {
+    this.recargar();
+    // Opcional: collapse el acordeón manual o automáticamente
   }
 }

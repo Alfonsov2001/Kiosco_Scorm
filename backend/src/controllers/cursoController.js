@@ -84,7 +84,8 @@ exports.subirCurso = async (req, res) => {
             titulo: req.body.titulo || nombreCarpeta,
             descripcion: req.body.descripcion || 'Curso SCORM subido',
             ruta_carpeta: rutaWeb,
-            punto_entrada: puntoEntrada
+            punto_entrada: puntoEntrada,
+            categoria_id: req.body.categoria_id || null
         });
 
         // 5. Limpieza zip original
@@ -108,6 +109,17 @@ exports.obtenerCursos = async (req, res) => {
         res.json(cursos);
     } catch (error) {
         res.status(500).json({ mensaje: 'Error obteniendo cursos' });
+    }
+};
+
+exports.obtenerCurso = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const curso = await Curso.getById(id);
+        if (!curso) return res.status(404).json({ mensaje: 'Curso no encontrado' });
+        res.json(curso);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error obteniendo curso' });
     }
 };
 

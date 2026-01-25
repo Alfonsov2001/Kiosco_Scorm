@@ -14,7 +14,7 @@ class Usuario {
         try {
             const { email } = data;
             const [result] = await db.query('INSERT INTO usuarios (email) VALUES (?)', [email]);
-            return { id: result.insertId, email };
+            return { id: result.insertId, email, rol: 'alumno' };
         } catch (error) {
             throw error;
         }

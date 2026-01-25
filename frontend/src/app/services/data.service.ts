@@ -26,15 +26,37 @@ export class DataService {
     return this.http.get(`${this.baseUrl}/api/cursos`);
   }
 
-  subirCurso(titulo: string, descripcion: string, archivo: File): Observable<any> {
+  subirCurso(titulo: string, descripcion: string, archivo: File, categoriaId: string = ''): Observable<any> {
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('file', archivo);
+    if (categoriaId) formData.append('categoria_id', categoriaId);
 
-    // Ruta correcta: localhost:3000/api/cursos/upload
-    // (Coincide con router.post('/upload') montado en /api/cursos)
     return this.http.post(`${this.baseUrl}/api/cursos/upload`, formData);
+  }
 
+  guardarProgreso(usuarioId: number, cursoId: number, cmi: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/progreso/guardar`, { usuarioId, cursoId, cmi });
+  }
+
+  obtenerProgreso(usuarioId: number, cursoId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/progreso/obtener?usuarioId=${usuarioId}&cursoId=${cursoId}`);
+  }
+
+  obtenerRecientes(usuarioId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/progreso/recientes?usuarioId=${usuarioId}`);
+  }
+
+  getCategorias(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/categorias`);
+  }
+
+  crearCategoria(nombre: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/categorias`, { nombre });
+  }
+
+  getCurso(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/cursos/${id}`);
   }
 }

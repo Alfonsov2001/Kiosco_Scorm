@@ -1,43 +1,96 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // <--- 1. Importamos ChangeDetectorRef
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   cursos: any[] = [];
-  usuario: any = {}; 
+  cursosFiltrados: any[] = [];
+  recientes: any[] = [];
+  categorias: any[] = [];
+  usuario: any = {};
+  cargando: boolean = false;
+
+  // Filtros
+  searchTitulo: string = '';
+  categoriaSeleccionada: string = '';
+
+  // Estado UI
+  cursoSeleccionado: any = null;
 
   constructor(
-    private dataService: DataService, 
+    private dataService: DataService,
     private router: Router,
-    private cd: ChangeDetectorRef // <--- 2. Lo inyectamos aquí para poder usarlo
-  ) {}
+    private cd: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     this.usuario = this.dataService.usuarioActual || { email: 'Invitado' };
+    this.cargarCursos();
+    this.cargarCategorias();
+  }
 
-    this.dataService.getCursos().subscribe({
-      next: (data: any) => {
-        this.cursos = data;
-        console.log('Cursos cargados:', this.cursos);
-        
-        // <--- 3. ¡LA ALARMA! Le decimos a Angular: "Oye, tengo datos nuevos, actualiza la pantalla YA"
-        this.cd.detectChanges(); 
+  cargarCategorias() {
+    this.dataService.getCategorias().subscribe({
+      next: (data) => {
+        console.log('✅ Dashboard - Categorías cargadas:', data);
+        this.categorias = data || [];
+        this.cd.detectChanges();
       },
-      error: (err) => {
-        console.error('Error al cargar cursos:', err);
-      }
+      error: (err) => console.error('❌ Error cargando categorías:', err)
     });
   }
 
-  irAlCurso(curso: any) {
+  cargarCursos() {
+    this.cargando = true;
+    this.dataService.getCursos().subscribe({
+      next: (data: any) => {
+        this.cursos = data || [];
+        this.aplicarFiltros();
+        this.cargando = false;
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar cursos:', err);
+        this.cargando = false;
+      }
+    });
+
+    if (this.usuario && this.usuario.id) {
+      this.dataService.obtenerRecientes(this.usuario.id).subscribe({
+        next: (data) => this.recientes = data || []
+      });
+    }
+  }
+
+  aplicarFiltros() {
+    const q = this.searchTitulo.trim().toLowerCase();
+    const cat = this.categoriaSeleccionada;
+
+    this.cursosFiltrados = this.cursos.filter(c => {
+      const matchTitulo = !q || (c.titulo || '').toLowerCase().includes(q);
+      const matchCat = !cat || c.categoria_id == cat; // Adaptar si bd tiene categoria
+      return matchTitulo && matchCat;
+    });
+  }
+
+  verDetalle(curso: any) {
+    this.cursoSeleccionado = curso;
+  }
+
+  cerrarDetalle() {
+    this.cursoSeleccionado = null;
+  }
+
+  iniciarCurso(curso: any) {
     console.log('Abriendo curso:', curso.titulo);
     this.dataService.cursoActual = curso;
     this.router.navigate(['/player', curso.id]);
@@ -48,9 +101,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-// Función para ir a la pantalla de subir cursos
   irSubir() {
-    this.router.navigate(['/upload']);
+    // No usado por alumno, pero por compatibilidad si quedo algo
   }
-
 }

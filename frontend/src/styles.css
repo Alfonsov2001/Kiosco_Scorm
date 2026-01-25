@@ -1,15 +1,178 @@
+/*
+  Identidad artística grupal (aplicación de paleta y tipografía)
+  - Fondo base: #F2EEF0
+  - Interacción/CTA: #009ACD
+  - Estructura/H1/Footer: #093370
+  - Hover: #007BA3 | Active: #005F82 | Disabled: #B3D9E8
+  - Éxito: #2D7A4F | Advertencia: #D68E2E | Error: #C4324D | Info: #009ACD
+*/
 
-/* Variables Globales de Colores */
 :root {
-  --primary-teal: #338ea3;
-  --secondary-bg: #d2d8e7;
-  --dark-panel: #393848;
-  --text-dark: #333;
+  /* Base */
+  --color-fondo-base: #F2EEF0;
+  --color-fondo-tarjeta: #FFFFFF;
+
+  /* Marca */
+  --color-interactivo-principal: #009ACD;
+  --color-borde-estructura: #093370;
+
+  /* Texto */
+  --color-texto-principal: #000000;
+  --color-texto-subtitulo: #1A4D7A;
+  --color-texto-secundario: #4A4A4A;
+  --color-texto-deshabilitado: #999999;
+
+  /* Estados interacción */
+  --color-hover-interactivo: #007BA3;
+  --color-activo-interactivo: #005F82;
+  --color-deshabilitado-interactivo: #B3D9E8;
+
+  /* Alertas */
+  --color-alerta-exito: #2D7A4F;
+  --color-alerta-advertencia: #D68E2E;
+  --color-alerta-error: #C4324D;
+  --color-alerta-info: #009ACD;
+
+  /* Acentos */
+  --color-acento-resaltado: #FFF4CC;
+  --acento-fondo-cita: #F7FBFD;
+  --acento-fondo-codigo: #F5F5F5;
+
+  /* Sombra focus accesible */
+  --sombra-foco: 0 0 0 0.25rem rgba(0, 154, 205, 0.25);
 }
 
 html, body {
   height: auto;
   min-height: 100%;
-  overflow-y: auto;  /*scroll del documento */
+  overflow-y: auto;
 }
 
+body {
+  font-family: 'Open Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background-color: var(--color-fondo-base);
+  color: var(--color-texto-principal);
+}
+
+/* Títulos */
+h1, .h1 {
+  color: var(--color-borde-estructura);
+  font-weight: 800;
+}
+
+h2, h3, .h2, .h3 {
+  color: var(--color-texto-subtitulo);
+  font-weight: 800;
+}
+
+.text-muted {
+  color: var(--color-texto-secundario) !important;
+}
+
+/* Utilidades de marca */
+.bg-structure { background-color: var(--color-borde-estructura) !important; }
+.text-structure { color: var(--color-borde-estructura) !important; }
+.border-structure { border-color: var(--color-borde-estructura) !important; }
+.bg-surface { background-color: var(--color-fondo-tarjeta) !important; }
+
+/* --- Bootstrap overrides (sin recompilar SCSS) --- */
+
+/* Links */
+a { color: var(--color-interactivo-principal); }
+a:hover { color: var(--color-hover-interactivo); }
+
+/* Focus (inputs, botones) */
+.form-control:focus,
+.form-select:focus,
+.btn:focus {
+  border-color: var(--color-interactivo-principal) !important;
+  box-shadow: var(--sombra-foco) !important;
+}
+
+/* Botón primario (CTA) */
+.btn-primary {
+  background-color: var(--color-interactivo-principal) !important;
+  border-color: var(--color-interactivo-principal) !important;
+  color: #fff !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-hover-interactivo) !important;
+  border-color: var(--color-hover-interactivo) !important;
+}
+
+.btn-primary:active {
+  background-color: var(--color-activo-interactivo) !important;
+  border-color: var(--color-activo-interactivo) !important;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background-color: var(--color-deshabilitado-interactivo) !important;
+  border-color: var(--color-deshabilitado-interactivo) !important;
+  color: var(--color-texto-deshabilitado) !important;
+}
+
+/* Outline primario */
+.btn-outline-primary {
+  color: var(--color-interactivo-principal) !important;
+  border-color: var(--color-interactivo-principal) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-interactivo-principal) !important;
+  border-color: var(--color-interactivo-principal) !important;
+  color: #fff !important;
+}
+
+/* Botón secundario (estructura) */
+.btn-secondary {
+  background-color: var(--color-borde-estructura) !important;
+  border-color: var(--color-borde-estructura) !important;
+}
+
+.btn-secondary:hover {
+  filter: brightness(1.08);
+}
+
+/* Alerts */
+.alert-success { border-color: var(--color-alerta-exito) !important; }
+.alert-warning { border-color: var(--color-alerta-advertencia) !important; }
+.alert-danger  { border-color: var(--color-alerta-error) !important; }
+.alert-info    { border-color: var(--color-alerta-info) !important; }
+
+/* Badges / progress */
+.progress-bar { background-color: var(--color-interactivo-principal) !important; }
+
+/* Cards */
+.card {
+  border-radius: 14px;
+  border: 1px solid rgba(9, 51, 112, 0.12);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(9, 51, 112, 0.12);
+}
+
+/* Header / Sidebar / Footer (layout) */
+.main-header,
+.main-footer {
+  background-color: var(--color-borde-estructura) !important;
+  color: #fff !important;
+}
+
+.sidebar-container {
+  background-color: var(--color-borde-estructura) !important;
+  color: #fff !important;
+}
+
+/* Mejoras visuales */
+.hover-cards {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.hover-cards:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+}

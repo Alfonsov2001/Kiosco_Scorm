@@ -19,6 +19,8 @@ app.use('/cursos', express.static(path.join(__dirname, 'public/cursos')));
 // --- ROUTES ---
 app.use('/api/cursos', cursoRoutes);
 app.use('/api', authRoutes);
+app.use('/api/progreso', require('./src/routes/progresoRoutes'));
+app.use('/api/categorias', require('./src/routes/categoriaRoutes'));
 
 // Test route
 app.get('/test', (req, res) => res.json({ status: 'OK (MVC)' }));
@@ -26,4 +28,6 @@ app.get('/test', (req, res) => res.json({ status: 'OK (MVC)' }));
 // --- START SERVER ---
 app.listen(PORT, () => {
     console.log(`🚀 SERVIDOR LISTO EN PUERTO ${PORT}`);
+    console.log(`✅ VERSIÓN CON CATEGORÍAS CARGADA`);
+    console.log(`📂 Rutas disponibles: /api/cursos, /api/login, /api/progreso, /api/categorias`);
 });

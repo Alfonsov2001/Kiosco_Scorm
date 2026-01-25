@@ -1,68 +1,96 @@
-<section class="dash">
-  
-  <!-- ===== TOOLBAR: categorías + búsqueda ===== -->
-  <div class="toolbar">
-    <div class="tool-group">
-      <img src="assets/images/icono_menu.png" class="tiny-icon" alt="v" />
-      <span>CATEGORÍAS</span>
-    </div>
-
-    <div class="tool-group search-group">
-      <select
-        class="search-input"
-        [(ngModel)]="categoriaSeleccionada"
-        (change)="aplicarFiltros()"
-      >
-        <option value="">Todas las categorías</option>
-        <option *ngFor="let c of categorias" [value]="c.id">
-          {{ c.nombre }}
-        </option>
-      </select>
-
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Buscar curso por título..."
-        [(ngModel)]="searchTitulo"
-        (input)="aplicarFiltros()"
-      />
-    </div>
-  </div>
-
-
-
-  <!-- ===== SUBIDA SCORM ===== -->
-  <div class="card">
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR (Placeholder, se integrará con el layout principal) -->
     
-    <app-upload></app-upload>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-3">
+      
+      <!-- TOOLBAR / HEADER -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Panel del Profesor</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="input-group me-2">
+            <span class="input-group-text" id="search-addon"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscar curso..." [(ngModel)]="searchTitulo" (input)="aplicarFiltros()">
+          </div>
+          <select class="form-select" [(ngModel)]="categoriaSeleccionada" (change)="aplicarFiltros()" style="max-width: 200px;">
+            <option value="">Todas las categorías</option>
+            <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- VISTA DETALLE DEL CURSO (Si hay seleccionado) -->
+      <div *ngIf="cursoSeleccionado" class="card mb-4 shadow-sm animate__animated animate__fadeIn">
+        <div class="card-header bg-structure text-white d-flex justify-content-between align-items-center">
+            <h4 class="my-0">{{ cursoSeleccionado.titulo }}</h4>
+            <button class="btn btn-light btn-sm" (click)="cerrarDetalle()">X</button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="lead">{{ cursoSeleccionado.descripcion || 'Sin descripción disponible.' }}</p>
+                    <hr>
+                    <p><strong>Fecha de subida:</strong> {{ cursoSeleccionado.fecha_subida | date:'medium' }}</p>
+                    <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
+                        <i class="bi bi-play-circle"></i> Iniciar Curso
+                    </button>
+                    <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
+                </div>
+                <div class="col-md-4 text-center">
+                    <!-- Placeholder de imagen -->
+                    <img src="assets/images/placeholder.jpg" class="img-fluid rounded" alt="Portada del curso">
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- VISTA GRID DE CURSOS (Si NO hay seleccionado) -->
+      <div *ngIf="!cursoSeleccionado">
+        
+        <!-- SECCIÓN DE SUBIDA (Solo Profesor) -->
+        <div class="accordion mb-4" id="accordionUpload">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingUpload">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpload">
+                   <i class="bi bi-cloud-upload me-2"></i> Nuevo Curso SCORM
+                </button>
+                </h2>
+                <div id="collapseUpload" class="accordion-collapse collapse" data-bs-parent="#accordionUpload">
+                <div class="accordion-body">
+                    <app-upload (cursoSubido)="onCursoSubido()"></app-upload>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Cursos Disponibles</h3>
+        <div *ngIf="cargando" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Cargando cursos...</p>
+        </div>
+
+        <div *ngIf="!cargando && cursosFiltrados.length === 0" class="alert alert-info">
+            No se encontraron cursos con los filtros actuales.
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="!cargando && cursosFiltrados.length > 0">
+          <div class="col" *ngFor="let c of cursosFiltrados">
+            <div class="card h-100 shadow-sm hover-card">
+              <!-- <img src="..." class="card-img-top" alt="..."> -->
+              <div class="card-body">
+                <h5 class="card-title">{{ c.titulo }}</h5>
+                <p class="card-text text-muted text-truncate">{{ c.descripcion || 'Curso SCORM interactivo' }}</p>
+              </div>
+              <div class="card-footer bg-transparent border-top-0">
+                <button class="btn btn-outline-primary w-100" (click)="verDetalle(c)">Ver Detalles</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
   </div>
-
-  <!-- ===== LISTA DE CURSOS (FILTRADA) ===== -->
-  <div class="card">
-    <h2>Cursos</h2>
-
-    <div *ngIf="cargando">Cargando cursos…</div>
-    <div *ngIf="!cargando && cursosFiltrados.length === 0">
-      No hay cursos para esa categoría / búsqueda.
-    </div>
-
-    <table *ngIf="!cargando && cursosFiltrados.length > 0" class="table">
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Subido</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let c of cursosFiltrados">
-          <td>{{ c.titulo }}</td>
-          <td>{{ c.fecha_subida | date:'short' }}</td>
-          <td class="right">
-            <button (click)="abrir(c.id)">Abrir</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+</div>

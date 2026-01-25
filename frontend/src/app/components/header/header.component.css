@@ -1,48 +1,77 @@
 .main-header {
-  background-color: var(--primary-teal);
-  color: white;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
-  height: 80px;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem;
+  height: 78px;
 }
 
 .logo-area {
-  background: #e6eceb;
-  color: var(--primary-teal);
-  padding: 8px 15px;
-  border-radius: 4px;
-  font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 12px;
 }
 
 .header-logo-img {
-  height: 70px;
+  height: 56px;
   width: auto;
+  display: block;
 }
 
 .title-area h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
   margin: 0;
-  letter-spacing: 1px;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
 }
 
 .user-area {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
+}
+
+.username {
+  font-weight: 600;
+  opacity: 0.95;
 }
 
 .btn-logout {
-  background-color: white;
-  color: black;
-  border: none;
-  padding: 8px 25px;
-  font-size: 1rem;
+  background: #fff;
+  color: var(--color-borde-estructura);
+  border: 0;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: 500;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.btn-logout:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+@media (max-width: 900px) {
+  .title-area h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .logo-area {
+    padding: 4px 8px;
+  }
+
+  .header-logo-img {
+    height: 44px;
+  }
+
+  .username {
+    display: none;
+  }
 }

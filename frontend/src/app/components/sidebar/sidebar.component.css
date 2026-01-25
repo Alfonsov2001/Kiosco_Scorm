@@ -1,79 +1,40 @@
-/* Importante: :host permite al componente tener altura propia */
 :host {
   display: block;
   height: 100%;
 }
 
-.sidebar {
-  width: 280px;
-  height: 100%; /* Ocupa toda la altura que le dé el padre */
-  background-color: #b0c4de;
-  border-right: 4px solid black;
-  display: flex;
-  flex-direction: column;
+.sidebar-container {
+  height: 100%;
+  min-height: 100%;
 }
 
-.sidebar-header {
-  background-color: #d1d5db;
-  text-align: center;
-  padding: 1rem;
-  border-bottom: 2px solid black;
+.sidebar-container h5 {
+  letter-spacing: 0.4px;
+  font-weight: 800;
 }
 
-.sidebar-header h3 {
-  margin: 0;
-  font-weight: 400;
-  font-size: 1.1rem;
+/* tarjetas de recientes */
+.sidebar-container .card {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: transform 120ms ease, background 120ms ease;
 }
 
-.sidebar-content {
-  background-color: var(--primary-teal);
-  flex: 1;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.sidebar-container .card:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
 }
 
-.course-thumbnail img {
-  width: 100%;
-  height: auto;
-  border: 1px solid white;
-  display: block;
+.sidebar-container .card-title {
+  color: #fff;
+  font-weight: 700;
 }
 
-/* Responsivo: Si la pantalla es pequeña, el sidebar ocupa todo el ancho */
+.sidebar-container .text-muted {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
 @media (max-width: 900px) {
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 4px solid black;
-    height: auto;
-  }
-
-  :host{
-  display:block;
-  position:relative !important;
-}
-
-.sidebar-container{
-  position:relative !important;
-  width:100%;
-}
-
-/* evita solapes por absolute/float */
-.sidebar-container *{
-  position:static;
-  float:none;
-}
-
-/* lista vertical simple */
-.sidebar-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  padding:12px;
-  box-sizing:border-box;
-}
-
+  :host { height: auto; }
+  .sidebar-container { border-radius: 14px; margin-bottom: 12px; }
 }

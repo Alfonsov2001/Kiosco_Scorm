@@ -1,16 +1,21 @@
-<div class="login-container">
-  <div class="card">
-    <h1>Bienvenido</h1>
-    <p>Introduce tu correo para acceder a los cursos.</p>
-    
-    <input 
-      type="email" 
-      [(ngModel)]="email" 
+<div class="login-page d-flex align-items-center justify-content-center py-5">
+  <div class="card login-card p-4">
+    <div class="text-center mb-3">
+      <img src="assets/images/logocampus.png" alt="Logo Campus" class="login-logo" />
+    </div>
+
+    <h1 class="h3 mb-1">Bienvenido</h1>
+    <p class="text-muted mb-3">Introduce tu correo para acceder a los cursos.</p>
+
+    <input
+      class="form-control mb-3"
+      type="email"
+      [(ngModel)]="email"
       placeholder="usuario@ejemplo.com"
-      (keyup.enter)="entrar()" 
+      (keyup.enter)="entrar()"
     />
-    
-    <button class="btn btn-primary full-width" (click)="entrar()">
+
+    <button class="btn btn-primary w-100" (click)="entrar()">
       Acceder
     </button>
   </div>

@@ -1,19 +1,104 @@
-<header class="top-bar">
-  <span>Hola, <strong>{{ usuario?.email }}</strong></span>
-  <button class="btn btn-danger" (click)="salir()">Cerrar Sesión</button>
-  <button class="btn-primary" style="margin-right: 10px;" (click)="irSubir()">➕ Subir Curso</button>
-</header>
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR (Placeholder) -->
 
-<main class="container">
-  <h2>Cursos Disponibles</h2>
-  
-  <div class="grid">
-    <div class="curso-card" *ngFor="let curso of cursos">
-      <h3>{{ curso.titulo }}</h3>
-      <p>{{ curso.descripcion }}</p>
-      <button class="btn btn-primary full-width" (click)="irAlCurso(curso)">
-        Comenzar Curso
-      </button>
-    </div>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-3">
+
+      <!-- TOOLBAR / HEADER -->
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Bienvenido, {{ usuario?.email }}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="input-group me-2">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscar curso..." [(ngModel)]="searchTitulo"
+              (input)="aplicarFiltros()">
+          </div>
+          <select class="form-select" [(ngModel)]="categoriaSeleccionada" (change)="aplicarFiltros()"
+            style="max-width: 200px;">
+            <option value="">Todas las categorías</option>
+            <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- VISTA DETALLE DEL CURSO -->
+      <div *ngIf="cursoSeleccionado" class="card mb-4 shadow-sm animate__animated animate__fadeIn">
+        <div class="card-header bg-structure text-white d-flex justify-content-between align-items-center">
+          <h4 class="my-0">{{ cursoSeleccionado.titulo }}</h4>
+          <button class="btn btn-light btn-sm" (click)="cerrarDetalle()">X</button>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <p class="lead">{{ cursoSeleccionado.descripcion || 'Sin descripción disponible.' }}</p>
+              <hr>
+              <p><strong>Estado:</strong> No iniciado (TODO: Implementar estado)</p>
+              <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
+                <i class="bi bi-play-circle"></i> Iniciar Curso
+              </button>
+              <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
+            </div>
+            <div class="col-md-4 text-center">
+              <img src="assets/images/placeholder.jpg" class="img-fluid rounded" alt="Portada">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA GRID DE CURSOS -->
+      <div *ngIf="!cursoSeleccionado">
+
+        <!-- SECCIÓN: CONTINUAR VIENDO (Solo si hay) -->
+        <div *ngIf="recientes.length > 0" class="mb-5">
+          <h3><i class="bi bi-clock-history"></i> Continuar Viendo</h3>
+          <div class="row row-cols-1 row-cols-md-4 g-4">
+            <div class="col" *ngFor="let r of recientes">
+              <div class="card h-100 border-primary shadow-sm" (click)="iniciarCurso(r)" style="cursor: pointer;">
+                <div class="card-body">
+                  <h6 class="card-title">{{ r.titulo }}</h6>
+                  <div class="progress mt-2" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 50%"></div>
+                    <!-- TODO: Calcular con cmi status -->
+                  </div>
+                  <small class="text-muted d-block mt-2">Último acceso: {{ r.fecha_actualizacion | date:'shortDate'
+                    }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="my-4">
+        </div>
+
+        <h3>Catálogo de Cursos</h3>
+        <div *ngIf="cargando" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p>Cargando catálogo...</p>
+        </div>
+
+        <div *ngIf="!cargando && cursosFiltrados.length === 0" class="alert alert-warning">
+          No se encontraron cursos disponibles.
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="!cargando && cursosFiltrados.length > 0">
+          <div class="col" *ngFor="let c of cursosFiltrados">
+            <div class="card h-100 shadow-sm hover-cards">
+              <div class="card-body">
+                <h5 class="card-title">{{ c.titulo }}</h5>
+                <p class="card-text text-muted text-truncate">{{ c.descripcion || 'Curso interactivo' }}</p>
+              </div>
+              <div class="card-footer bg-transparent border-top-0">
+                <button class="btn btn-outline-primary w-100" (click)="verDetalle(c)">
+                  <i class="bi bi-eye"></i> Ver
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
   </div>
-</main>
+</div>

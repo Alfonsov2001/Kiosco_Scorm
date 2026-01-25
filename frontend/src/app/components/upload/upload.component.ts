@@ -1,26 +1,70 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Necesario para [(ngModel)]
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Importamos FormsModule aquí
+  imports: [CommonModule, FormsModule],
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.css']
 })
-export class UploadComponent {
+export class UploadComponent implements OnInit {
   titulo: string = '';
   descripcion: string = '';
   archivoSeleccionado: File | null = null;
   mensaje: string = '';
   esError: boolean = false;
 
-  constructor(private dataService: DataService, private router: Router) {}
+  categorias: any[] = [];
+  categoriaIdSeleccionada: string = '';
+  mostrarNuevaCategoria: boolean = false;
+  nuevaCategoriaNombre: string = '';
 
-  // Se ejecuta cuando el usuario elige un archivo
+  @Output() cursoSubido = new EventEmitter<void>();
+
+  constructor(private dataService: DataService, private router: Router, private cd: ChangeDetectorRef) { }
+
+  ngOnInit() {
+    this.cargarCategorias();
+  }
+
+  cargarCategorias() {
+    this.dataService.getCategorias().subscribe({
+      next: (data) => {
+        console.log('Frontend recibió categorías:', data);
+        this.categorias = data || [];
+        this.cd.detectChanges();
+      },
+      error: (e) => console.error('Error cargando categorías:', e)
+    });
+  }
+
+  toggleNuevaCategoria() {
+    this.mostrarNuevaCategoria = !this.mostrarNuevaCategoria;
+  }
+
+  guardarCategoria() {
+    if (!this.nuevaCategoriaNombre.trim()) return;
+
+    this.dataService.crearCategoria(this.nuevaCategoriaNombre).subscribe({
+      next: (cat) => {
+        this.mensaje = 'Categoría creada';
+        this.esError = false;
+        this.categorias.push(cat);
+        this.categoriaIdSeleccionada = cat.id;
+        this.mostrarNuevaCategoria = false;
+        this.nuevaCategoriaNombre = '';
+      },
+      error: (e) => {
+        this.mensaje = 'Error creando categoría';
+        this.esError = true;
+      }
+    });
+  }
+
   onFileSelected(event: any) {
     this.archivoSeleccionado = event.target.files[0];
   }
@@ -35,12 +79,17 @@ export class UploadComponent {
     this.mensaje = 'Subiendo curso... Espere por favor.';
     this.esError = false;
 
-    this.dataService.subirCurso(this.titulo, this.descripcion, this.archivoSeleccionado)
+    this.dataService.subirCurso(this.titulo, this.descripcion, this.archivoSeleccionado, this.categoriaIdSeleccionada)
       .subscribe({
         next: (res) => {
           console.log('Éxito:', res);
           alert('¡Curso subido correctamente!');
-          this.router.navigate(['/dashboard']); // Volvemos al inicio para ver el nuevo curso
+          this.mensaje = '';
+          this.titulo = '';
+          this.descripcion = '';
+          this.archivoSeleccionado = null;
+          this.categoriaIdSeleccionada = '';
+          this.cursoSubido.emit(); // <--- EMITIMOS EVENTO
         },
         error: (err) => {
           console.error(err);
@@ -51,6 +100,6 @@ export class UploadComponent {
   }
 
   cancelar() {
-    this.router.navigate(['/dashboard']);
+    this.cursoSubido.emit(); // Ocultar o cancelar
   }
 }

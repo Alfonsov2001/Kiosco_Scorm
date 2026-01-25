@@ -26,6 +26,9 @@ router.post('/upload', upload.single('file'), cursoController.subirCurso);
 // GET /api/cursos
 router.get('/', cursoController.obtenerCursos);
 
+// GET /api/cursos/:id
+router.get('/:id', cursoController.obtenerCurso);
+
 // POST /api/cursos/login (Aunque login suele estar en authRoutes, lo dejaremos aqui por ahora o lo movemos a /api/login en app.js)
 // Para mantener compatibilidad si el frontend llama a /api/login, lo montaremos en app.js aparte o redirigimos.
 // El frontend llama a /api/login. Si montamos este router en /api/cursos, seria /api/cursos/login.

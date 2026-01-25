@@ -1,11 +1,17 @@
-<div class="sidebar-container">
-  <h3>ÚLTIMOS VISITADOS</h3>
+<div class="sidebar-container p-3">
+  <h5 class="text-white mb-3">ÚLTIMOS VISITADOS</h5>
 
   <div class="sidebar-list">
-    <!-- aquí más adelante poner aqui *ngFor con cursos reales -->
-    <div class="item">Curso 1</div>
-    <div class="item">Curso 2</div>
-    <div class="item">Curso 3</div>
+    <div class="card mb-2 bg-dark text-white border-secondary" *ngFor="let c of recientes" (click)="abrir(c)"
+      style="cursor: pointer;">
+      <div class="card-body p-2">
+        <h6 class="card-title mb-1 text-truncate">{{ c.titulo }}</h6>
+        <small class="text-muted">{{ c.fecha_actualizacion | date:'short' }}</small>
+      </div>
+    </div>
+
+    <div *ngIf="recientes.length === 0" class="text-muted text-center small">
+      No hay actividad reciente.
+    </div>
   </div>
 </div>
-
