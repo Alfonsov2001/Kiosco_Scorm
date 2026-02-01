@@ -25,8 +25,8 @@ export class DashboardProfesor implements OnInit {
 
   constructor(
     // private http: HttpClient, <--- YA NO LO NECESITAMOS, usamos el servicio
-    private router: Router, 
-    private dataService: DataService, 
+    private router: Router,
+    private dataService: DataService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -55,7 +55,7 @@ export class DashboardProfesor implements OnInit {
         console.log('📚 Cursos cargados correctamente:', data);
         this.cursos = data || [];
         this.aplicarFiltros();
-        
+
         this.cargando = false; // Desactivar spinner
         this.cd.detectChanges(); // ⚠️ Forzar actualización de la vista
       },
@@ -63,7 +63,7 @@ export class DashboardProfesor implements OnInit {
         console.error('❌ Error cargando cursos (Profesor):', e);
         this.cursos = [];
         this.cursosFiltrados = [];
-        
+
         this.cargando = false; // Desactivar spinner incluso si falla
         this.cd.detectChanges(); // ⚠️ Forzar actualización de la vista
       },
@@ -78,21 +78,38 @@ export class DashboardProfesor implements OnInit {
     this.cursosFiltrados = (this.cursos || []).filter((c) => {
       const titulo = String(c.titulo || '').toLowerCase();
       const matchTitulo = !q || titulo.includes(q);
-      
+
       // Comparamos IDs como strings para evitar problemas de tipos (number vs string)
       const cCatId = c.categoria_id != null ? String(c.categoria_id) : '';
       const matchCategoria = !cat || cCatId === cat;
-      
+
       return matchTitulo && matchCategoria;
     });
   }
 
   verDetalle(curso: any): void {
     this.cursoSeleccionado = curso;
+    this.dataService.registrarVisita(curso);
   }
 
   cerrarDetalle(): void {
     this.cursoSeleccionado = null;
+  }
+
+  eliminarCurso(id: number): void {
+    if (confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer y borrará todos los archivos y el progreso asociado.')) {
+      this.dataService.eliminarCurso(id).subscribe({
+        next: () => {
+          this.cerrarDetalle();
+          this.recargar(); // Recargar la lista
+        },
+        error: (err) => {
+          console.error('Error al eliminar:', err);
+          const msg = err.error?.mensaje || err.message || 'Error desconocido';
+          alert('No se pudo eliminar el curso: ' + msg);
+        }
+      });
+    }
   }
 
   iniciarCurso(curso: any): void {

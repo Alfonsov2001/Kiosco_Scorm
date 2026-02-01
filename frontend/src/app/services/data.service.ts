@@ -56,11 +56,15 @@ export interface EstadisticasUsuario {
   providedIn: 'root'
 })
 export class DataService {
-  // Usar ruta vacía para que funcione con el proxy de Angular
-  private baseUrl = 'http://localhost:3000';
+  // Puerto del servidor backend
+  public baseUrl = 'http://localhost:3000';
 
   public usuarioActual: any = null;
   public cursoActual: any = null;
+
+  constructor(private http: HttpClient) {
+    this.cargarVisitasDesdeStorage();
+  }
 
   // ==================== ESTADO DE RECIENTES (SIDEBAR) ====================
   // Fuente de verdad para la barra lateral
@@ -68,7 +72,49 @@ export class DataService {
   // Observable público al que se suscribe el SidebarComponent
   public cursosVisitados$ = this.cursosVisitadosSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  /**
+   * Registra una visita a un curso (cuando se hace clic en "Ver").
+   * Mantiene un máximo de 4 cursos, el más reciente arriba.
+   */
+  registrarVisita(curso: any) {
+    if (!curso || !curso.id) return;
+
+    let actuales = [...this.cursosVisitadosSubject.value];
+
+    // 1. Eliminar si ya existe (para moverlo arriba)
+    actuales = actuales.filter(c => c.id !== curso.id);
+
+    // 2. Insertar al principio
+    actuales.unshift(curso);
+
+    // 3. Limitar a 4
+    if (actuales.length > 4) {
+      actuales = actuales.slice(0, 4);
+    }
+
+    // 4. Actualizar estado y persistir
+    this.cursosVisitadosSubject.next(actuales);
+    this.guardarVisitasEnStorage(actuales);
+  }
+
+  private guardarVisitasEnStorage(visitas: any[]) {
+    try {
+      localStorage.setItem('ultimosVisitados', JSON.stringify(visitas));
+    } catch (e) {
+      console.warn('No se pudo guardar en localStorage', e);
+    }
+  }
+
+  private cargarVisitasDesdeStorage() {
+    try {
+      const stored = localStorage.getItem('ultimosVisitados');
+      if (stored) {
+        this.cursosVisitadosSubject.next(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.warn('No se pudo cargar de localStorage', e);
+    }
+  }
 
   // ==================== AUTENTICACIÓN Y SESIÓN ====================
 
@@ -89,13 +135,14 @@ export class DataService {
   logout() {
     this.usuarioActual = null;
     this.cursoActual = null;
-    
-    // Limpiamos la lista de la barra lateral
+
+    // Limpiamos la lista de la barra lateral y storage
     this.cursosVisitadosSubject.next([]);
-    
+    localStorage.removeItem('ultimosVisitados');
+
     // Limpiamos el almacenamiento del navegador
     localStorage.removeItem('usuarioActual');
-    
+
     console.log('Sesión cerrada y datos limpiados.');
   }
 
@@ -109,12 +156,25 @@ export class DataService {
     return this.http.get<any>(`${this.baseUrl}/api/cursos/${id}`);
   }
 
-  subirCurso(titulo: string, descripcion: string, archivo: File, categoriaId: string = ''): Observable<any> {
+  eliminarCurso(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/cursos/${id}`).pipe(
+      tap(() => {
+        // Al eliminar con éxito, actualizamos la lista de visitas
+        const actuales = [...this.cursosVisitadosSubject.value];
+        const nuevos = actuales.filter(c => c.id !== id);
+        this.cursosVisitadosSubject.next(nuevos);
+        this.guardarVisitasEnStorage(nuevos);
+      })
+    );
+  }
+
+  subirCurso(titulo: string, descripcion: string, archivo: File, categoriaId: string = '', imagen?: File): Observable<any> {
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('file', archivo);
     if (categoriaId) formData.append('categoria_id', categoriaId);
+    if (imagen) formData.append('imagen', imagen);
     return this.http.post(`${this.baseUrl}/api/cursos/upload`, formData);
   }
 
@@ -202,10 +262,10 @@ export class DataService {
    */
   calcularEstadisticas(cursos: Curso[]): EstadisticasUsuario {
     const total = cursos.length;
-    const completados = cursos.filter(c => 
+    const completados = cursos.filter(c =>
       c.estado === 'completed' || c.estado === 'passed'
     ).length;
-    const enProgreso = cursos.filter(c => 
+    const enProgreso = cursos.filter(c =>
       c.estado === 'incomplete' || c.estado === 'browsed'
     ).length;
     const noIniciados = total - completados - enProgreso;

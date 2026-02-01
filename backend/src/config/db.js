@@ -6,7 +6,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '', 
-    database: 'kiosKo_scorm',
+    database: 'kiosco_scorm',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

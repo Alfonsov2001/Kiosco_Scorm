@@ -1,0 +1,102 @@
+body { font-family:Arial, Helvetica, sans-serif;  font-size:16px !important; margin:0px; padding:0px;}
+
+#main-container-pg {padding:70px 0px 40px; }
+
+#int-container {
+	width: 860px;
+	margin: 0 auto;
+	height: 260px;
+	padding:20px 10px 10px;
+	background: url("../images/bg_main.png") no-repeat scroll 0 0 transparent;
+}
+
+#Question {font-size:16px; color:#333; width:91%; text-align:left; height:60px;}
+
+#pagewrapper{ height: 190px; margin: 0px auto; 	width: 710px; position:relative;} 
+
+#botton-region {
+	border-radius:0px 0px 4px 4px; -moz-border-radius:0px 0px 4px 4px; -webkit-border-radius:0px 0px 4px 4px; -khtml-border-radius:0px 0px 4px 4px;
+	background:#0090D4;
+	height:26px;
+	padding:4px 0px 2px; 
+	margin:0px;
+}
+
+
+ 
+
+
+
+
+#note{
+	background:url("../images/note.png") no-repeat;
+	width:340px;
+	height:20px;
+	color:#EA5B30;
+    text-align: right; 
+}
+#note span{
+    display: block;
+    padding-top: 2px;
+}
+.list{
+   width: 220px;
+   height: 160px; 
+   float:left;
+   margin: 21px 135px 0 0;
+}
+
+.option-con{
+   display: inline-block;
+    float: left;
+    height: auto;
+	margin:2px 0px 10px;
+    width: 300px;
+}
+.ui-line{
+	left:0px;top:0px;width:740px;height:auto;position: absolute;
+}
+
+.checkbox_unchecked{
+	/*background:url("../images/checkbox.png") no-repeat;*/
+	width:100%;
+	height: auto;
+	margin: 0 0 10px; 
+	position: relative;
+	padding: 0 0 0 30px;
+	/*height:auto;*/
+	/*margin-right: 15px;*/
+	/*float:left;*/	
+	/*min-height:50px;*/	
+}
+
+.checkbox_checked{
+	background:url("../images/tickbox.png") no-repeat;
+	width:100%;
+	height:auto;
+	/*margin-right: 9px;*/
+	float:left;
+	cursor:pointer;
+	min-height:50px;
+}
+
+.option_text{
+	color:#333;
+	font-weight:normal;
+	width:100%;
+	margin:0 0 0 38px;
+	float:none;
+	text-align:left; cursor:pointer;
+}
+
+
+#feedback {	width:780px; height:120px; background:url("../images/feedpanel.png") no-repeat 50% 100% scroll transparent; display:none; position:absolute; bottom:0px; text-align:left; z-index:4; float: right;
+right: -43px;}
+
+#feedback #title { width: 200px; height: 40px; margin: 0px;}
+
+
+#feedback #closeBtn{width:20px;height:20px;background:url("../images/close_btn.png");float: right;
+top: 38px;right: 26px;position: absolute;cursor:pointer;}
+#feedback #fed-message { width: 750px; margin: 0px auto; padding:4px; height:70px; font-size:90%; text-align:justify;}
+

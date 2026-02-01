@@ -4,15 +4,27 @@ const multer = require('multer');
 const path = require('path');
 const cursoController = require('../controllers/cursoController');
 
+console.log('--- Cargando cursoRoutes.js ---');
+console.log('Configurando upload.fields con [file] e [imagen]');
+
 // Configuración de almacenamiento temporal
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Guardamos en backend/uploads
-        cb(null, path.join(__dirname, '../../uploads'));
+        // Si es imagen, va a uploads/imagenes, si es zip va a uploads/
+        if (file.fieldname === 'imagen') {
+            cb(null, path.join(__dirname, '../../uploads/imagenes'));
+        } else {
+            cb(null, path.join(__dirname, '../../uploads'));
+        }
     },
     filename: (req, file, cb) => {
         const unico = Date.now();
-        cb(null, `scorm-${unico}.zip`);
+        const extension = path.extname(file.originalname);
+        if (file.fieldname === 'imagen') {
+            cb(null, `img-${unico}${extension}`);
+        } else {
+            cb(null, `scorm-${unico}.zip`);
+        }
     }
 });
 
@@ -20,14 +32,15 @@ const upload = multer({ storage: storage });
 
 // DEFINICIÓN DE RUTAS
 
-// POST /api/cursos/upload
-router.post('/upload', upload.single('file'), cursoController.subirCurso);
+// POST /api/cursos/upload - Usamos any() temporalmente para depurar
+router.post('/upload', upload.any(), cursoController.subirCurso);
 
 // GET /api/cursos
 router.get('/', cursoController.obtenerCursos);
 
 // GET /api/cursos/:id
 router.get('/:id', cursoController.obtenerCurso);
+router.delete('/:id', cursoController.eliminarCurso);
 
 // POST /api/cursos/login (Aunque login suele estar en authRoutes, lo dejaremos aqui por ahora o lo movemos a /api/login en app.js)
 // Para mantener compatibilidad si el frontend llama a /api/login, lo montaremos en app.js aparte o redirigimos.

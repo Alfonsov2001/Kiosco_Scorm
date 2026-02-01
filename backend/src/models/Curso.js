@@ -21,11 +21,23 @@ class Curso {
 
     static async create(data) {
         try {
-            const { titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id } = data;
+            const { titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id, imagen_url } = data;
             const [result] = await db.query(
-                'INSERT INTO cursos (titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id) VALUES (?, ?, ?, ?, ?)',
-                [titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id || null]
+                'INSERT INTO cursos (titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id, imagen_url) VALUES (?, ?, ?, ?, ?, ?)',
+                [titulo, descripcion, ruta_carpeta, punto_entrada, categoria_id || null, imagen_url || null]
             );
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async delete(id) {
+        try {
+            // Primero eliminamos el progreso asociado (si no hay cascada en BD)
+            await db.query('DELETE FROM progreso WHERE curso_id = ?', [id]);
+            // Luego el curso
+            const [result] = await db.query('DELETE FROM cursos WHERE id = ?', [id]);
             return result;
         } catch (error) {
             throw error;

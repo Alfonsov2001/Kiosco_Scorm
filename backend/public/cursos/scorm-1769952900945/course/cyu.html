@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=9">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
+	<title></title>
+
+	<link type="text/css" href="css/cyu.css" rel="stylesheet"/>
+	<!--<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.0.custom.css">-->
+	<link rel="stylesheet" href="css/cyu_in.css">
+	
+	<script language="javascript" src="js/lib/jquery-1.5.js"></script>
+	
+	<script language="javascript" src="js/cyu.js"></script>	
+
+	<style>
+	.clk-inst {
+		bottom: 65px;
+	}
+	
+	@media screen and (max-width: 768px) {
+
+      	.clk-inst {	bottom: 20px; }
+	}
+	</style>
+<body style="background: #E8EFF5; ">
+
+<div align="center">
+
+    <div id="int_dis"></div>
+	<div class="main_layout  intractivity">
+	 
+	   <div id="knowledge_check">Check Your Understanding</div>
+		<div class="page_title" id="pagetitle"></div>
+		<div id="question_bg"></div>
+		<!--<div class="instruction_txt"></div>-->
+		<div id="content">
+			<div class="content_region">
+			<!--------Partition starts here-------->
+				<div class="single_row">
+					<div class="single_column">
+						<div class="content_inner_region">
+							<div class="content_inner">
+							    
+								<div id="questionBox">
+									<!--<div id="heading"></div>										
+									<div id="QuestionText"></div>-->
+									<div id="Options"></div>
+								</div>	
+								<div id="screen_feedback" class="cyu_instruction">	
+									
+									
+								</div>					
+								<div id="buttons" class="cyu_buttons">	
+									<div id="but-submit" class='inactive'>Submit</div>
+									<div id="but-next" class='active'></div>
+								</div>
+								
+								
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+				
+			</div>		
+		</div>
+		<!--Feedback-->
+		<div id="feedbox">
+		    <div id="feed_head"><div id="feed-title">Title here</div><div id="feed-close"></div></div>
+			<div id="feedbox_inner">
+				
+				<p id="message" >Feed back comes here </p>
+				
+			</div>
+			
+		</div>
+		
+		
+		
+	</div>
+	<div style="visibility:hidden;">
+	<img src="images/checkbox-selected.png" />
+	<img src="images/checkbox-unselected.png" />
+	<img src="images/radio-selected.png" />
+	<img src="images/radio-unselected.png" />
+	<img src="images/submit.png" />
+	<img src="images/feedback_head.png" />
+	<img src="images/hint_close.png" />
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+    "css_indi": [
+        {
+            "url": "css\/plantilla.css",
+            "medio": "screen"
+        },
+        {
+            "url": "css\/plantilla.css",
+            "medio": "print"
+        }
+    ],
+    "script_indi": [
+        {
+            "url": "https:\/\/cloud.qurseo.com\/datos\/scorm8_qurseo.js"
+        }
+    ]
+}

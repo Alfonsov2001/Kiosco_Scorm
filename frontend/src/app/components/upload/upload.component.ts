@@ -15,6 +15,7 @@ export class UploadComponent implements OnInit {
   titulo: string = '';
   descripcion: string = '';
   archivoSeleccionado: File | null = null;
+  imagenSeleccionada: File | null = null;
   mensaje: string = '';
   esError: boolean = false;
 
@@ -69,6 +70,10 @@ export class UploadComponent implements OnInit {
     this.archivoSeleccionado = event.target.files[0];
   }
 
+  onImageSelected(event: any) {
+    this.imagenSeleccionada = event.target.files[0];
+  }
+
   subir() {
     if (!this.titulo || !this.archivoSeleccionado) {
       this.mensaje = 'Por favor, completa el título y selecciona un archivo.';
@@ -79,7 +84,7 @@ export class UploadComponent implements OnInit {
     this.mensaje = 'Subiendo curso... Espere por favor.';
     this.esError = false;
 
-    this.dataService.subirCurso(this.titulo, this.descripcion, this.archivoSeleccionado, this.categoriaIdSeleccionada)
+    this.dataService.subirCurso(this.titulo, this.descripcion, this.archivoSeleccionado, this.categoriaIdSeleccionada, this.imagenSeleccionada || undefined)
       .subscribe({
         next: (res) => {
           console.log('Éxito:', res);
@@ -88,6 +93,7 @@ export class UploadComponent implements OnInit {
           this.titulo = '';
           this.descripcion = '';
           this.archivoSeleccionado = null;
+          this.imagenSeleccionada = null;
           this.categoriaIdSeleccionada = '';
           this.cursoSubido.emit(); // <--- EMITIMOS EVENTO
         },

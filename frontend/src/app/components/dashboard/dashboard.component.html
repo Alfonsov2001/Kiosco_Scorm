@@ -3,7 +3,8 @@
     <main class="col-12 px-md-4 pt-3">
 
       <!-- HEADER -->
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Bienvenido, {{ usuario?.email }}</h1>
       </div>
 
@@ -55,8 +56,7 @@
             <span class="progress-percent">{{ estadisticas.promedioProgreso }}%</span>
           </div>
           <div class="progress" style="height: 10px;">
-            <div class="progress-bar" role="progressbar" 
-              [style.width.%]="estadisticas.promedioProgreso"
+            <div class="progress-bar" role="progressbar" [style.width.%]="estadisticas.promedioProgreso"
               [style.backgroundColor]="getProgresoColor(estadisticas.promedioProgreso)">
             </div>
           </div>
@@ -68,10 +68,11 @@
         <div class="d-flex flex-wrap gap-2 align-items-center">
           <div class="input-group" style="max-width: 280px;">
             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" placeholder="Buscar curso..." 
-              [(ngModel)]="searchTitulo" (input)="aplicarFiltros()">
+            <input type="text" class="form-control" placeholder="Buscar curso..." [(ngModel)]="searchTitulo"
+              (input)="aplicarFiltros()">
           </div>
-          <select class="form-select" [(ngModel)]="categoriaSeleccionada" (change)="aplicarFiltros()" style="max-width: 200px;">
+          <select class="form-select" [(ngModel)]="categoriaSeleccionada" (change)="aplicarFiltros()"
+            style="max-width: 200px;">
             <option value="">Todas las categorías</option>
             <option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</option>
           </select>
@@ -81,7 +82,7 @@
             <option value="in-progress">En progreso</option>
             <option value="not-started">No iniciados</option>
           </select>
-          <button class="btn btn-outline-secondary btn-sm" (click)="limpiarFiltros()" 
+          <button class="btn btn-outline-secondary btn-sm" (click)="limpiarFiltros()"
             *ngIf="searchTitulo || categoriaSeleccionada || filtroEstado">
             <i class="bi bi-x-lg"></i> Limpiar
           </button>
@@ -115,8 +116,7 @@
                     <span class="fw-bold">{{ cursoSeleccionado.porcentaje || 0 }}%</span>
                   </div>
                   <div class="progress" style="height: 12px;">
-                    <div class="progress-bar" role="progressbar" 
-                      [style.width.%]="cursoSeleccionado.porcentaje || 0"
+                    <div class="progress-bar" role="progressbar" [style.width.%]="cursoSeleccionado.porcentaje || 0"
                       [style.backgroundColor]="getProgresoColor(cursoSeleccionado.porcentaje || 0)">
                     </div>
                   </div>
@@ -124,14 +124,20 @@
               </div>
               <div class="d-flex gap-2">
                 <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
-                  <i class="bi" [ngClass]="getBotonIcono(cursoSeleccionado)"></i> 
+                  <i class="bi" [ngClass]="getBotonIcono(cursoSeleccionado)"></i>
                   {{ getBotonTexto(cursoSeleccionado) }}
                 </button>
                 <button class="btn btn-secondary btn-lg" (click)="cerrarDetalle()">Volver</button>
               </div>
             </div>
             <div class="col-md-4 text-center d-none d-md-block">
-              <div class="curso-placeholder"><i class="bi bi-journal-bookmark-fill"></i></div>
+              <div class="curso-header-image" *ngIf="cursoSeleccionado.imagen_url">
+                <img [src]="'http://localhost:3000' + cursoSeleccionado.imagen_url" [alt]="cursoSeleccionado.titulo"
+                  class="img-fluid rounded shadow">
+              </div>
+              <div class="curso-placeholder" *ngIf="!cursoSeleccionado.imagen_url">
+                <i class="bi bi-journal-bookmark-fill"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -139,7 +145,7 @@
 
       <!-- VISTA GRID DE CURSOS -->
       <div *ngIf="!cursoSeleccionado">
-        
+
         <!-- CONTINUAR VIENDO -->
         <div *ngIf="recientes.length > 0" class="mb-4">
           <h3 class="section-title"><i class="bi bi-clock-history"></i> Continuar Viendo</h3>
@@ -149,7 +155,7 @@
                 <div class="card-body">
                   <h6 class="card-title text-truncate">{{ r.titulo }}</h6>
                   <div class="progress mt-2" style="height: 6px;">
-                    <div class="progress-bar" role="progressbar" 
+                    <div class="progress-bar" role="progressbar"
                       [style.width.%]="r.cmi_lesson_status === 'completed' ? 100 : 50">
                     </div>
                   </div>
@@ -165,7 +171,7 @@
 
         <!-- CATÁLOGO -->
         <h3 class="section-title">Catálogo de Cursos</h3>
-        
+
         <div *ngIf="cargando" class="text-center py-5">
           <div class="spinner-border text-primary" role="status"></div>
           <p class="mt-2 text-muted">Cargando catálogo...</p>
@@ -178,8 +184,15 @@
         <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="!cargando && cursosFiltrados.length > 0">
           <div class="col" *ngFor="let c of cursosFiltrados">
             <div class="card h-100 shadow-sm hover-card curso-card">
-              <div class="card-badge" [ngClass]="getEstadoClase(c.estado)">
-                <i class="bi" [ngClass]="getEstadoIcono(c.estado)"></i> {{ getEstadoTexto(c.estado) }}
+              <div class="curso-card-img-container">
+                <img *ngIf="c.imagen_url" [src]="'http://localhost:3000' + c.imagen_url"
+                  class="card-img-top curso-card-img" [alt]="c.titulo">
+                <div *ngIf="!c.imagen_url" class="curso-card-img-placeholder">
+                  <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+                <div class="card-badge" [ngClass]="getEstadoClase(c.estado)">
+                  <i class="bi" [ngClass]="getEstadoIcono(c.estado)"></i> {{ getEstadoTexto(c.estado) }}
+                </div>
               </div>
               <div class="card-body">
                 <h5 class="card-title">{{ c.titulo }}</h5>
@@ -192,8 +205,7 @@
                     </small>
                   </div>
                   <div class="progress" style="height: 8px;">
-                    <div class="progress-bar" role="progressbar" 
-                      [style.width.%]="c.porcentaje || 0"
+                    <div class="progress-bar" role="progressbar" [style.width.%]="c.porcentaje || 0"
                       [style.backgroundColor]="getProgresoColor(c.porcentaje || 0)">
                     </div>
                   </div>

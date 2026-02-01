@@ -33,10 +33,16 @@
     <textarea class="form-control" [(ngModel)]="descripcion" placeholder="Breve resumen..." rows="3"></textarea>
   </div>
 
-  <div class="form-group mb-4">
+  <div class="form-group mb-3">
     <label class="form-label">Archivo ZIP (SCORM):</label>
     <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".zip">
-    <div class="form-text">Debe ser un archivo .zip válido que contenga un paquete SCORM 1.2 o 2004.</div>
+    <div class="form-text">Archivo .zip del paquete SCORM.</div>
+  </div>
+
+  <div class="form-group mb-4">
+    <label class="form-label">Imagen de Portada (Opcional):</label>
+    <input type="file" class="form-control" (change)="onImageSelected($event)" accept="image/*">
+    <div class="form-text">Formatos recomendados: JPG, PNG.</div>
   </div>
 
   <div class="d-flex justify-content-end gap-2">

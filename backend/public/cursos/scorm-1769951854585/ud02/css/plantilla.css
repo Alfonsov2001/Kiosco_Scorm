@@ -1,0 +1,186 @@
+h3:not(.iyc_mensaje_final):not(.iyc_intro_curso):not(.iyc_intro_unidad):not(.iyc_titulo_indice) { font-family: Roboto !important; font-size: 1.4rem !important; }
+h4:not(.modal-title):not(.dropdown-title):not([data-key-literal]):not(.titulo_act-aprendizaje) { font-family: Roboto !important; font-size: 1.3rem !important; }
+h5 { font-family: Roboto !important; font-size: 1.1rem !important; }
+h6, .contenteditable p, .contenteditable ul, .contenteditable ol, .resena, .mce-content-body, .tiny { font-family: Roboto !important; font-size: 1rem !important; }
+.modal-dialog h3:not(.iyc_mensaje_final):not(.iyc_intro_curso):not(.iyc_intro_unidad):not(.iyc_titulo_indice), .modal-dialog h4:not(.modal-title):not(.dropdown-title):not([data-key-literal]), .modal-dialog h5, .modal-dialog h6, .modal-dialog .contenteditable p, .modal-dialog .contenteditable ul, .modal-dialog .contenteditable ol, .modal-dialog .resena, .modal-dialog .mce-content-body, .modal-dialog .tiny {font-size:  1em !important; }
+button.iyc_sweetalert_actividades .icon-recurso_actividades .path3::before { color: rgb(0, 179, 53); }
+button.iyc_sweetalert_actividades .icon-recurso_actividades .path2::before { color: rgb(26, 255, 94); }
+.iyc_sweetalert_actividades .icon-recurso_actividades { background: rgb(0, 179, 53) !important; }
+.iyc_actividades .icon-recurso_actividades .path3::before { color: rgb(0, 179, 53); }
+.iyc_actividades .icon-recurso_actividades .path2::before { color: rgb(26, 255, 94); }
+.iyc_actividades h4 { color: rgb(0, 179, 53) !important; }
+.iyc_actividades { border: 0.15em solid rgb(26, 255, 94) !important; }
+button.iyc_sweetalert_video .icon-recurso_video .path3::before { color: rgb(0, 157, 177); }
+button.iyc_sweetalert_video .icon-recurso_video .path2::before { color: rgb(26, 228, 255); }
+.iyc_sweetalert_video .icon-recurso_video { background: rgb(0, 157, 177) !important; }
+.iyc_video .icon-recurso_video .path3::before { color: rgb(0, 157, 177); }
+.iyc_video .icon-recurso_video .path2::before { color: rgb(26, 228, 255); }
+.iyc_video h4 { color: rgb(0, 157, 177) !important; }
+.iyc_video { border: 0.15em solid rgb(26, 228, 255) !important; }
+button.iyc_sweetalert_sabias-que .icon-recurso_sabias-que .path3::before { color: rgb(225, 187, 0); }
+button.iyc_sweetalert_sabias-que .icon-recurso_sabias-que .path2::before { color: rgb(255, 224, 71); }
+.iyc_sweetalert_sabias-que .icon-recurso_sabias-que { background: rgb(225, 187, 0) !important; }
+.iyc_sabias-que .icon-recurso_sabias-que .path3::before { color: rgb(225, 187, 0); }
+.iyc_sabias-que .icon-recurso_sabias-que .path2::before { color: rgb(255, 224, 71); }
+.iyc_sabias-que h4 { color: rgb(225, 187, 0) !important; }
+.iyc_sabias-que { border: 0.15em solid rgb(255, 224, 71) !important; }
+button.iyc_sweetalert_recuerda .icon-recurso_recuerda .path3::before { color: rgb(214, 94, 132); }
+button.iyc_sweetalert_recuerda .icon-recurso_recuerda .path2::before { color: rgb(234, 174, 193); }
+.iyc_sweetalert_recuerda .icon-recurso_recuerda { background: rgb(214, 94, 132) !important; }
+.iyc_recuerda .icon-recurso_recuerda .path3::before { color: rgb(214, 94, 132); }
+.iyc_recuerda .icon-recurso_recuerda .path2::before { color: rgb(234, 174, 193); }
+.iyc_recuerda h4 { color: rgb(214, 94, 132) !important; }
+.iyc_recuerda { border: 0.15em solid rgb(234, 174, 193) !important; }
+button.iyc_sweetalert_receta .icon-recurso_receta .path3::before { color: rgb(188, 97, 36); }
+button.iyc_sweetalert_receta .icon-recurso_receta .path2::before { color: rgb(226, 151, 101); }
+.iyc_sweetalert_receta .icon-recurso_receta { background: rgb(188, 97, 36) !important; }
+.iyc_receta .icon-recurso_receta .path3::before { color: rgb(188, 97, 36); }
+.iyc_receta .icon-recurso_receta .path2::before { color: rgb(226, 151, 101); }
+.iyc_receta h4 { color: rgb(188, 97, 36) !important; }
+.iyc_receta { border: 0.15em solid rgb(226, 151, 101) !important; }
+button.iyc_sweetalert_practica .icon-recurso_practica .path3::before { color: rgb(6, 147, 252); }
+button.iyc_sweetalert_practica .icon-recurso_practica .path2::before { color: rgb(109, 191, 254); }
+.iyc_sweetalert_practica .icon-recurso_practica { background: rgb(6, 147, 252) !important; }
+.iyc_practica .icon-recurso_practica .path3::before { color: rgb(6, 147, 252); }
+.iyc_practica .icon-recurso_practica .path2::before { color: rgb(109, 191, 254); }
+.iyc_practica h4 { color: rgb(6, 147, 252) !important; }
+.iyc_practica { border: 0.15em solid rgb(109, 191, 254) !important; }
+button.iyc_sweetalert_para-saber-mas .icon-recurso_para-saber-mas .path3::before { color: rgb(142, 85, 142); }
+button.iyc_sweetalert_para-saber-mas .icon-recurso_para-saber-mas .path2::before { color: rgb(188, 143, 188); }
+.iyc_sweetalert_para-saber-mas .icon-recurso_para-saber-mas { background: rgb(142, 85, 142) !important; }
+.iyc_para-saber-mas .icon-recurso_para-saber-mas .path3::before { color: rgb(142, 85, 142); }
+.iyc_para-saber-mas .icon-recurso_para-saber-mas .path2::before { color: rgb(188, 143, 188); }
+.iyc_para-saber-mas h4 { color: rgb(142, 85, 142) !important; }
+.iyc_para-saber-mas { border: 0.15em solid rgb(188, 143, 188) !important; }
+button.iyc_sweetalert_nota .icon-recurso_nota .path3::before { color: rgb(157, 118, 153); }
+button.iyc_sweetalert_nota .icon-recurso_nota .path2::before { color: rgb(200, 177, 198); }
+.iyc_sweetalert_nota .icon-recurso_nota { background: rgb(157, 118, 153) !important; }
+.iyc_nota .icon-recurso_nota .path3::before { color: rgb(157, 118, 153); }
+.iyc_nota .icon-recurso_nota .path2::before { color: rgb(200, 177, 198); }
+.iyc_nota h4 { color: rgb(157, 118, 153) !important; }
+.iyc_nota { border: 0.15em solid rgb(200, 177, 198) !important; }
+button.iyc_sweetalert_interactivo .icon-recurso_interactivo .path3::before { color: rgb(157, 118, 153); }
+button.iyc_sweetalert_interactivo .icon-recurso_interactivo .path2::before { color: rgb(200, 177, 198); }
+.iyc_sweetalert_interactivo .icon-recurso_interactivo { background: rgb(157, 118, 153) !important; }
+.iyc_interactivo .icon-recurso_interactivo .path3::before { color: rgb(157, 118, 153); }
+.iyc_interactivo .icon-recurso_interactivo .path2::before { color: rgb(200, 177, 198); }
+.iyc_interactivo h4 { color: rgb(157, 118, 153) !important; }
+.iyc_interactivo { border: 0.15em solid rgb(200, 177, 198) !important; }
+button.iyc_sweetalert_importante .icon-recurso_importante .path3::before { color: rgb(255, 80, 80); }
+button.iyc_sweetalert_importante .icon-recurso_importante .path2::before { color: rgb(255, 184, 184); }
+.iyc_sweetalert_importante .icon-recurso_importante { background: rgb(255, 80, 80) !important; }
+.iyc_importante .icon-recurso_importante .path3::before { color: rgb(255, 80, 80); }
+.iyc_importante .icon-recurso_importante .path2::before { color: rgb(255, 184, 184); }
+.iyc_importante h4 { color: rgb(255, 80, 80) !important; }
+.iyc_importante { border: 0.15em solid rgb(255, 184, 184) !important; }
+button.iyc_sweetalert_hilo-conductor .icon-recurso_hilo-conductor .path3::before { color: rgb(250, 154, 109); }
+button.iyc_sweetalert_hilo-conductor .icon-recurso_hilo-conductor .path2::before { color: rgb(253, 221, 206); }
+.iyc_sweetalert_hilo-conductor .icon-recurso_hilo-conductor { background: rgb(250, 154, 109) !important; }
+.iyc_hilo-conductor .icon-recurso_hilo-conductor .path3::before { color: rgb(250, 154, 109); }
+.iyc_hilo-conductor .icon-recurso_hilo-conductor .path2::before { color: rgb(253, 221, 206); }
+.iyc_hilo-conductor h4 { color: rgb(250, 154, 109) !important; }
+.iyc_recurso.iyc_hilo-conductor { border: 0.1em dashed rgb(253, 221, 206) !important; }
+button.iyc_sweetalert_escucha-y-repite .icon-recurso_escucha-y-repite .path3::before { color: rgb(10, 94, 78); }
+button.iyc_sweetalert_escucha-y-repite .icon-recurso_escucha-y-repite .path2::before { color: rgb(19, 185, 154); }
+.iyc_sweetalert_escucha-y-repite .icon-recurso_escucha-y-repite { background: rgb(10, 94, 78) !important; }
+.iyc_escucha-y-repite .icon-recurso_escucha-y-repite .path3::before { color: rgb(10, 94, 78); }
+.iyc_escucha-y-repite .icon-recurso_escucha-y-repite .path2::before { color: rgb(19, 185, 154); }
+.iyc_escucha-y-repite h4 { color: rgb(10, 94, 78) !important; }
+.iyc_escucha-y-repite { border: 0.15em solid rgb(19, 185, 154) !important; }
+button.iyc_sweetalert_ejemplo .icon-recurso_ejemplo .path3::before { color: rgb(255, 166, 100); }
+button.iyc_sweetalert_ejemplo .icon-recurso_ejemplo .path2::before { color: rgb(255, 226, 204); }
+.iyc_sweetalert_ejemplo .icon-recurso_ejemplo { background: rgb(255, 166, 100) !important; }
+.iyc_ejemplo .icon-recurso_ejemplo .path3::before { color: rgb(255, 166, 100); }
+.iyc_ejemplo .icon-recurso_ejemplo .path2::before { color: rgb(255, 226, 204); }
+.iyc_ejemplo h4 { color: rgb(255, 166, 100) !important; }
+.iyc_ejemplo { border: 0.15em solid rgb(255, 226, 204) !important; }
+button.iyc_sweetalert_definicion .icon-recurso_definicion .path3::before { color: rgb(98, 163, 159); }
+button.iyc_sweetalert_definicion .icon-recurso_definicion .path2::before { color: rgb(162, 200, 198); }
+.iyc_sweetalert_definicion .icon-recurso_definicion { background: rgb(98, 163, 159) !important; }
+.iyc_definicion .icon-recurso_definicion .path3::before { color: rgb(98, 163, 159); }
+.iyc_definicion .icon-recurso_definicion .path2::before { color: rgb(162, 200, 198); }
+.iyc_definicion h4 { color: rgb(98, 163, 159) !important; }
+.iyc_definicion { border: 0.15em solid rgb(162, 200, 198) !important; }
+button.iyc_sweetalert_consejo .icon-recurso_consejo .path3::before { color: rgb(214, 180, 133); }
+button.iyc_sweetalert_consejo .icon-recurso_consejo .path2::before { color: rgb(240, 227, 209); }
+.iyc_sweetalert_consejo .icon-recurso_consejo { background: rgb(214, 180, 133) !important; }
+.iyc_consejo .icon-recurso_consejo .path3::before { color: rgb(214, 180, 133); }
+.iyc_consejo .icon-recurso_consejo .path2::before { color: rgb(240, 227, 209); }
+.iyc_consejo h4 { color: rgb(214, 180, 133) !important; }
+.iyc_consejo { border: 0.15em solid rgb(240, 227, 209) !important; }
+button.iyc_sweetalert_aplicacion-practica .icon-recurso_aplicacion-practica .path3::before { color: rgb(173, 24, 99); }
+button.iyc_sweetalert_aplicacion-practica .icon-recurso_aplicacion-practica .path2::before { color: rgb(230, 71, 150); }
+.iyc_sweetalert_aplicacion-practica .icon-recurso_aplicacion-practica { background: rgb(173, 24, 99) !important; }
+.iyc_aplicacion-practica .icon-recurso_aplicacion-practica .path3::before { color: rgb(173, 24, 99); }
+.iyc_aplicacion-practica .icon-recurso_aplicacion-practica .path2::before { color: rgb(230, 71, 150); }
+.iyc_aplicacion-practica h4 { color: rgb(173, 24, 99) !important; }
+.iyc_aplicacion-practica { border: 0.15em solid rgb(230, 71, 150) !important; }
+h4.dropdown-title { color: rgb(255, 255, 255) !important; }
+.recuadro-texto .recuadro-texto-content { color: rgb(255, 255, 255) !important; }
+ul.carousel-indicators-index li { color: rgb(255, 255, 255) !important; }
+#iyc_nav_right .iyc_ico_arrow { color: rgb(255, 255, 255) !important; }
+#iyc_carousel .close:not([data-dismiss="modal"]) { color: rgb(255, 255, 255) !important; text-shadow: rgb(255, 255, 255) 0px 1px 0px !important; }
+#ico_ampliar_indice { color: rgb(255, 255, 255) !important; }
+#iyc_container_navbar .dropdown-menu .dropdown-header { color: rgb(255, 255, 255) !important; }
+.iyc_content_iframe h4.modal-title { color: rgb(255, 255, 255) !important; }
+.iyc_titulos_manual { color: rgb(255, 255, 255) !important; }
+#iyc_container_navbar #iyc_ico_texto_audio .glyphicon-comment::after { color: rgb(255, 128, 0) !important; }
+#iyc_container_navbar.iyc_nav_ayuda .iyc_ico_active_help.navbar-toggle { background-color: rgb(255, 153, 51) !important; }
+#iyc_container_navbar.iyc_nav_ayuda #iyc_nav_center.iyc_ico_active_help { background: linear-gradient(to right, transparent 0%, rgb(255, 153, 51) 30%, rgb(255, 153, 51) 50%, rgb(255, 153, 51) 70%, transparent 100%) !important; }
+#iyc_ico_barra_navegacion.navbar-toggle:hover { background-color: rgb(255, 153, 51) !important; }
+.iyc_cont-ico-ayuda.iyc_option-horizontal { background: rgb(204, 102, 0) !important; }
+.iyc_menu_1.iyc_menu_xs { background: rgb(204, 102, 0) !important; }
+#iyc_ico_barra_navegacion.navbar-toggle { background-color: rgb(204, 102, 0) !important; }
+@media (max-width: 767px) {  .navbar-default .navbar-collapse { background-color: rgb(204, 102, 0) !important; }  .navbar-default .navbar-collapse .carousel-indicators li.bolitaBloq::after { background-color: rgb(204, 102, 0) !important; }  #iyc_nav_center::before { background: linear-gradient(to right, rgb(204, 102, 0) 0%, rgb(204, 102, 0) 50%, transparent 100%) !important; }  #iyc_nav_center::after { background: linear-gradient(to right, transparent 0%, rgb(204, 102, 0) 50%, rgb(204, 102, 0) 100%) !important; } h3:not(.iyc_mensaje_final):not(.iyc_intro_curso):not(.iyc_intro_unidad):not(.iyc_titulo_indice), h4:not(.modal-title):not(.dropdown-title):not([data-key-literal]), h5, h6, .contenteditable p, .contenteditable ul, .contenteditable ol, .resena, .mce-content-body, .tiny { font-size: 1em !important; }}
+.carousel-indicators li.bolitaBloq::after { background-color: rgb(204, 102, 0) !important; }
+@media (min-width: 768px) {  #iyc_nav_center::before { background: linear-gradient(to right, rgb(255, 128, 0) 0%, rgb(255, 128, 0) 50%, transparent 100%) !important; }  #iyc_nav_center::after { background: linear-gradient(to right, transparent 0%, rgb(255, 128, 0) 50%, rgb(255, 128, 0) 100%) !important; }}
+.iyc_cont-ico-ayuda { background-color: rgb(255, 128, 0) !important; }
+#iyc_container_navbar { background-color: rgb(255, 128, 0) !important; }
+.iyc_cont-ico-ayuda span { color: rgb(0, 75, 121) !important; }
+ol.carousel-indicators .iyc_num_ap { color: rgb(0, 75, 121) !important; }
+.iyc_ico_arrow.disabled { color: rgb(255, 255, 255) !important; background-color: rgb(0, 75, 121) !important; }
+#glosario_menu_button button:hover { background-color: rgb(0, 113, 184) !important; }
+.iyc_ico_arrow:not(.disabled):hover { color: rgb(255, 255, 255) !important; background-color: rgb(0, 113, 184) !important; }
+.iyc_codigo_curso h2 { color: rgb(0, 75, 121) !important; }
+#glosario_menu_button button.btn[disabled] { background: rgb(0, 75, 121) !important; }
+#glosario_menu_button button { background: rgb(0, 75, 121) !important; }
+.iyc_ico_arrow { background-color: rgb(0, 75, 121) !important; }
+.iyc_ico_arrow:not(#iyc_ico_left):not(#iyc_ico_right):not(#iyc_num_screen):not(#ico_ampliar_indice) { color: rgb(0, 75, 121) !important; }
+.iyc_ico_nav:not(.disabled):not(#iyc_ico_left):not(#iyc_ico_right):not(#iyc_num_screen):not(#ico_ampliar_indice):not(.pull-right):hover { color: rgb(0, 113, 184) !important; }
+.iyc_ico_nav:not(#iyc_ico_left):not(#iyc_ico_right):not(#iyc_num_screen):not(#ico_ampliar_indice):not(.pull-right) { color: rgb(0, 75, 121) !important; }
+.iyc_content_iframe .modal-header { background-color: rgb(0, 75, 121) !important; }
+h5 { color: rgb(51, 80, 112) !important; }
+h4 { color: rgb(35, 55, 77) !important; }
+h3 { color: rgb(35, 55, 77) !important; }
+#iyc_ventana_final h3 { color: inherit !important; }
+h3.glosario_letra_title { color: rgb(27, 42, 59) !important; }
+section h3:not(.titulo-infografia) { color: rgb(27, 42, 59) !important; }
+#divisa path { fill: rgb(27, 42, 59) !important; }
+.portada_num_cap { background: rgb(27, 42, 59) !important; }
+#glosario_menu_button button.active { background-color: rgb(27, 42, 59) !important; }
+.badge_num_screen, .iyc_cont-ico-ayuda.badge_num_screen { background-color: rgb(27, 42, 59) !important; }
+ul.iyc_listas_ayuda-2 li::after { color: rgb(27, 42, 59) !important; }
+ul:not(.infografia):not(#revisions-list):not(#screens-list):not(.slide_tarjeta) li::before { color: rgb(27, 42, 59) !important; }
+.carousel-indicators li.iyc_punto_final .glyphicon { background: rgb(27, 42, 59) !important; border: 2px solid rgb(27, 42, 59) !important; }
+.iyc_final_apartado.alert .iyc_ico_mensaje { color: rgb(27, 42, 59) !important; }
+.iyc_codigo_curso h3 { color: rgb(27, 42, 59) !important; }
+.iyc_container_title_screen .page-header h2 { color: rgb(27, 42, 59) !important; }
+.titulo-subapartado { color: rgb(27, 42, 59) !important; }
+.titulo-apartado { color: rgb(27, 42, 59) !important; }
+h2 { color: rgb(27, 42, 59) !important; }
+#iyc_dropdown_search span[class*="icon-flecha"] { color: rgb(153, 77, 0) !important; }
+.page-header h2 button:hover { color: rgb(153, 77, 0) !important; }
+.page-header h2 button { color: rgb(153, 77, 0) !important; }
+#iyc_table_completados_wrapper .btn-primary:hover { background-color: rgb(153, 77, 0) !important; border-color: rgb(153, 77, 0) !important; }
+#iyc_table_completados_wrapper .btn-primary { background-color: rgb(153, 77, 0) !important; border-color: rgb(153, 77, 0) !important; }
+.recuadro-texto { background-color: rgb(153, 77, 0) !important; }
+.dropdown-menu:not(#revisions-list):not(#screens-list) .dropdown-header { background-color: rgb(153, 77, 0) !important; }
+ul.carousel-indicators-index li:hover span { border-top-color: rgb(235, 117, 0) !important; }
+ul.carousel-indicators-index li span { border-top-color: rgb(235, 117, 0) !important; }
+ul.carousel-indicators-index li:hover { background-color: rgb(255, 191, 128) !important; border-top-color: rgb(153, 77, 0) !important; color: rgb(153, 77, 0) !important; }
+.iyc_codigo_curso .glyphicon { color: rgb(255, 128, 0) !important; }
+.dropdown-menu .arrow::after { border-top-color: rgb(255, 128, 0) !important; }
+.iyc_codigo_curso .iyc_cod { color: rgb(255, 128, 0) !important; }
+#iyc_container_header { background: rgb(255, 128, 0) !important; }
+.dropdown-menu:not(#user):not(#revisions-list):not(#screens-list):not(.dropdown-section):not(.dropdown-menu-collage):not([aria-labelledby="dropdown-left"]):not([aria-labelledby="dropdown-right"]):not([aria-labelledby="activate-typography"]):not([aria-labelledby="activate-font-size"]):not([aria-labelledby="paste-screen"]):not([aria-labelledby="clipboard-apartado"]) { background: rgb(255, 128, 0) !important; }
+#iyc_carousel .progress-bar { background-color: rgb(255, 128, 0) !important; }

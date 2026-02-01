@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
   recientes: any[] = [];
   categorias: any[] = [];
   usuario: any = {};
-  
+
   // Estadísticas
   estadisticas: any = {
     totalCursos: 0,
@@ -119,10 +119,10 @@ export class DashboardComponent implements OnInit {
 
   calcularEstadisticas() {
     const total = this.cursos.length;
-    const completados = this.cursos.filter(c => 
+    const completados = this.cursos.filter(c =>
       c.estado === 'completed' || c.estado === 'passed'
     ).length;
-    const enProgreso = this.cursos.filter(c => 
+    const enProgreso = this.cursos.filter(c =>
       c.estado === 'incomplete' || c.estado === 'browsed'
     ).length;
     const noIniciados = total - completados - enProgreso;
@@ -154,7 +154,7 @@ export class DashboardComponent implements OnInit {
     this.cursosFiltrados = this.cursos.filter(c => {
       const matchTitulo = !q || (c.titulo || '').toLowerCase().includes(q);
       const matchCat = !cat || String(c.categoria_id) === String(cat);
-      
+
       let matchEstado = true;
       if (estado === 'completed') {
         matchEstado = c.estado === 'completed' || c.estado === 'passed';
@@ -179,6 +179,7 @@ export class DashboardComponent implements OnInit {
 
   verDetalle(curso: any) {
     this.cursoSeleccionado = curso;
+    this.dataService.registrarVisita(curso);
   }
 
   cerrarDetalle() {

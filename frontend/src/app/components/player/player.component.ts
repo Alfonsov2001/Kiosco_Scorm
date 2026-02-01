@@ -18,14 +18,14 @@ import { ScormService } from '../../services/scorm.service';
   styleUrls: ['./player.component.css']
 })
 export class PlayerComponent implements OnInit, OnDestroy {
-  
+
   // Variables
   curso: any = null;
   urlSegura: SafeResourceUrl | undefined;
   cargando: boolean = true;
   progresoActual: number = 0;
   nombreUsuario: string = 'Alumno';
-  
+
   // Suscripción para detectar cambios en tiempo real
   private progresoSub: Subscription | undefined;
 
@@ -42,14 +42,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     try {
       // Obtener el ID de la URL (ej: /player/5)
       const id = this.route.snapshot.paramMap.get('id');
-      
+
       // --- LOGICA DE CURSO ---
       this.curso = this.dataService.cursoActual;
       // Si recargamos la página, el servicio pierde el dato, así que lo pedimos de nuevo
       if (!this.curso || this.curso.id !== Number(id)) {
         // Nota: Asegúrate de que tu DataService tenga el método 'getCurso'
         // Si usas promesas o observables, ajústalo aquí. Asumo Observable convertido a Promise:
-        this.curso = await this.dataService.getCurso(Number(id)).toPromise(); 
+        this.curso = await this.dataService.getCurso(Number(id)).toPromise();
       }
 
       // --- LOGICA DE USUARIO ---
@@ -76,17 +76,23 @@ export class PlayerComponent implements OnInit, OnDestroy {
       });
 
       // Cargar donde se quedó la última vez
-      try { await this.scormService.cargarEstadoInicial(); } catch(e){}
+      try { await this.scormService.cargarEstadoInicial(); } catch (e) { }
 
       // --- CONSTRUIR URL DEL IFRAME ---
       let ruta = this.curso.ruta_carpeta;
       if (!ruta.startsWith('/')) ruta = '/' + ruta;
-      
-      const urlFinal = `${ruta}/${this.curso.punto_entrada}`;
-      
+
+      // EXPLICACIÓN DEL FIX: 
+      // Anteponemos la URL del backend (http://localhost:3000) para que el iframe 
+      // busque los archivos en el servidor Express y no en el propio Angular (4200).
+      // Si no hacemos esto, Angular no encuentra el archivo, da 404 y redirige al login.
+      const urlFinal = `${this.dataService.baseUrl}${ruta}/${this.curso.punto_entrada}`;
+
+      console.log('🔗 Cargando curso desde:', urlFinal);
+
       // "Sanitizar" la URL para que Angular confíe en ella
       this.urlSegura = this.sanitizer.bypassSecurityTrustResourceUrl(urlFinal);
-      
+
       // ¡Listo! Quitamos el spinner
       this.cargando = false;
       this.cdr.detectChanges();
@@ -106,7 +112,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   volver() {
     // Guardar antes de salir
     this.scormService.forceCommit();
-    
+
     // Redirigir según si es profe o alumno
     const usuario = this.dataService.usuarioActual;
     const ruta = (usuario?.rol === 'profesor') ? '/dashboard-profesor' : '/dashboard';

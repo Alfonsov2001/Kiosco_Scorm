@@ -1,0 +1,75 @@
+{
+    "curso": {
+        "titulo": "Mantenimiento de Piscinas de Uso Colectivo en tiempos de COVID-19",
+        "biblio": "false",
+        "glosario": "false",
+        "tutor": "false",
+        "descripcion": "Solamente como complemento del curso Mantenimiento de Piscinas de Uso Colectivo en tiempos de COVID-19",
+        "ejerciciosEvaluacion": "false",
+        "ayuda": "false",
+        "impresion": "true",
+        "codigo": "",
+        "portada": "\/images\/portada\/ud1_1600152611.jpeg",
+        "logo": "\/images\/logotipo\/logo_1600160714.png",
+        "seguimientoEstricto": "2",
+        "navegacionSecuencial": "2",
+        "ejerciciosAvisoNotaCorte": false,
+        "ejerciciosNotaCorte": "5",
+        "ejerciciosVerResultado": false,
+        "plantilla": "plantilla_1585292523",
+        "id": 3665,
+        "precio": "",
+        "fechaVenta": "",
+        "literales": "es_default",
+        "idioma": "es",
+        "pdf": "false"
+    },
+    "titulo_unidades": {
+        "1": "Virus Respiratorios Emergentes",
+        "2": "Coronavirus. \u00bfC\u00f3mo protegerme de una Infecci\u00f3n?"
+    },
+    "apartados_unidades": {
+        "1": {
+            "ap01010101": "Introducci\u00f3n",
+            "ap01010201": "Qu\u00e9 son los Coronavirus",
+            "ap01010301": "Causas",
+            "ap01010401": "\u00bfCu\u00e1les son los s\u00edntomas del COVID-19?",
+            "ap01010501": "\u00bfDe qu\u00e9 forma se puede adquirir la infecci\u00f3n?",
+            "ap01010601": "\u00bfExiste un tratamiento para la COVID-19?"
+        },
+        "2": {
+            "ap01020101": "Introducci\u00f3n",
+            "ap01020201": "Virus SARS-CoV-2 en las piscinas",
+            "ap01020301": "Actuaciones antes de abrir cada una de las piscinas",
+            "ap01020401": "Medidas preventivas cuando est\u00e9 abierta la piscina"
+        }
+    },
+    "subapartados_unidades": {
+        "": {
+            "": []
+        },
+        "1": {
+            "ap01010101": [],
+            "ap01010201": [],
+            "ap01010301": [],
+            "ap01010401": [],
+            "ap01010501": [],
+            "ap01010601": []
+        },
+        "2": {
+            "ap01020101": [],
+            "ap01020201": [],
+            "ap01020301": [],
+            "ap01020401": []
+        }
+    },
+    "info": {
+        "autor": "wacostalugo",
+        "fecha_creacion": "2020-09-15 08:50:11",
+        "version_qurseo": "4.3.0",
+        "fecha_modificacion": "2020-09-15 13:32:58"
+    },
+    "usuarios": {
+        "wacostalugo": "2020-09-15 13:32:58"
+    }
+}

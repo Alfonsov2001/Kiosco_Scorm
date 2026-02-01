@@ -18,21 +18,18 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.usuario = this.dataService.usuarioActual;
-    if (this.usuario) {
-      this.cargarRecientes();
-    }
-  }
 
-  cargarRecientes() {
-    this.dataService.obtenerRecientes(this.usuario.id).subscribe({
-      next: (data: any) => this.recientes = data || [],
-      error: (e) => console.error(e)
+    // Nos suscribimos al observable de cursos visitados para tener cambios en tiempo real
+    this.dataService.cursosVisitados$.subscribe(cursos => {
+      this.recientes = cursos || [];
     });
   }
 
   abrir(curso: any) {
-    this.dataService.cursoActual = curso;
-    this.router.navigate(['/player', curso.curso_id]);
+    this.dataService.cursoActual = { ...curso }; // Copia para seguridad
+    // Manejamos tanto 'id' (registroVisita) como 'curso_id' (legacy backend)
+    const id = curso.id || curso.curso_id;
+    this.router.navigate(['/player', id]);
   }
 
   // ==================== HELPERS DE PROGRESO ====================
