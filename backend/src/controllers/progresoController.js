@@ -42,4 +42,21 @@ exports.obtenerRecientes = async (req, res) => {
     } catch (error) {
         res.status(500).json({ mensaje: 'Error obteniendo historial' });
     }
-}
+};
+
+// NUEVO: Obtener todos los progresos de un usuario
+exports.obtenerTodos = async (req, res) => {
+    const { usuarioId } = req.query;
+
+    if (!usuarioId) {
+        return res.status(400).json({ mensaje: 'UsuarioId requerido' });
+    }
+
+    try {
+        const progresos = await Progreso.getAllByUsuario(usuarioId);
+        res.json(progresos);
+    } catch (error) {
+        console.error('Error obteniendo todos los progresos:', error);
+        res.status(500).json({ mensaje: 'Error obteniendo progresos' });
+    }
+};

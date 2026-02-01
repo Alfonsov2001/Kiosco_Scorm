@@ -1,15 +1,56 @@
-<div class="player-container">
+<div class="main-layout">
 
-  <div class="header-bar bg-dark text-white p-2 d-flex justify-content-between align-items-center">
-    <h5 class="m-0">Reproduciendo: {{ curso?.titulo }}</h5>
-    <button class="btn btn-outline-light btn-sm" (click)="volver()">❌ Salir</button>
-  </div>
+  <header class="app-header">
+    <div class="header-left">
+      <img src="assets/images/logocampus.png" alt="Logo" class="logo-img" onError="this.style.display='none'">
+    </div>
+    <div class="header-center">
+      <h1>KIOSCO SCORMS</h1>
+    </div>
+    <div class="header-right">
+      <span class="username">{{ nombreUsuario }}</span>
+      <button class="btn-salir" (click)="volver()">SALIR</button>
+    </div>
+  </header>
 
+  <main class="player-body">
+    
+    <div class="course-status-bar" *ngIf="!cargando">
+      <div class="course-info">
+        <h2 class="course-title">{{ curso?.titulo || 'Cargando título...' }}</h2>
+        <div class="progress-area">
+          <span class="progress-text">Avance: {{ progresoActual | number:'1.0-0' }}%</span>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="progresoActual"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <div *ngIf="cargando" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando curso...</p>
+    </div>
 
-  <div class="iframe-container" style="height: calc(100vh - 100px);">
-    <iframe *ngIf="urlSegura" [src]="urlSegura" frameborder="0" style="width: 100%; height: 100%;" allowfullscreen>
-    </iframe>
-  </div>
+    <div class="iframe-container" *ngIf="urlSegura && !cargando">
+      <iframe 
+        [src]="urlSegura" 
+        class="scorm-iframe" 
+        frameborder="0" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </main>
 
+  <footer class="app-footer">
+    <div class="footer-left">
+      <p>© 2025 Kiosco SCORM.</p>
+    </div>
+    <div class="footer-right">
+      <p class="dev-title">Desarrolladores:</p>
+      <ul>
+        <li>Equipo de Desarrollo 2º DAM/DAW</li>
+      </ul>
+    </div>
+  </footer>
 </div>

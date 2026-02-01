@@ -1,20 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { HeaderComponent } from './components/header/header.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { FooterComponent } from './components/footer/footer.component';
-
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,
-    HeaderComponent,
-    SidebarComponent,
-    FooterComponent
+    RouterOutlet 
+    // He quitado Header, Sidebar y Footer de aquí porque 
+    // ya los tienes en LayoutComponent y aquí no se usan.
   ],
-  templateUrl: './app.html',
+  templateUrl: './app.html', // Tu app.html solo tiene <router-outlet>
   styleUrls: ['./app.css']
 })
 export class App {}

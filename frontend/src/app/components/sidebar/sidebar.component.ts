@@ -32,11 +32,47 @@ export class SidebarComponent implements OnInit {
 
   abrir(curso: any) {
     this.dataService.cursoActual = curso;
-    this.router.navigate(['/player', curso.id]); // Asumimos id del curso, ojo si id es prog_id
-    // El endpoint devuelve p.*, c.titulo... 
-    // progreso.curso_id es lo que necesitamos.
-    // SQL: SELECT p.*, c.titulo ... FROM progreso p JOIN cursos c ON p.curso_id = c.id
-    // Entonces 'id' en row será id de progreso, 'curso_id' será id de curso.
     this.router.navigate(['/player', curso.curso_id]);
+  }
+
+  // ==================== HELPERS DE PROGRESO ====================
+
+  getPorcentaje(status: string): number {
+    if (!status) return 0;
+    const s = status.toLowerCase();
+    if (s === 'completed' || s === 'passed') return 100;
+    if (s === 'failed') return 100;
+    if (s === 'incomplete') return 50;
+    if (s === 'browsed') return 25;
+    return 0;
+  }
+
+  getEstadoIcono(status: string): string {
+    if (!status) return 'bi-circle';
+    const s = status.toLowerCase();
+    if (s === 'completed') return 'bi-check-circle-fill';
+    if (s === 'passed') return 'bi-trophy-fill';
+    if (s === 'failed') return 'bi-x-circle-fill';
+    if (s === 'incomplete') return 'bi-play-circle-fill';
+    if (s === 'browsed') return 'bi-eye-fill';
+    return 'bi-circle';
+  }
+
+  getEstadoClase(status: string): string {
+    if (!status) return 'status-pendiente';
+    const s = status.toLowerCase();
+    if (s === 'completed' || s === 'passed') return 'status-completado';
+    if (s === 'failed') return 'status-suspendido';
+    if (s === 'incomplete') return 'status-progreso';
+    if (s === 'browsed') return 'status-visto';
+    return 'status-pendiente';
+  }
+
+  getProgresoColor(status: string): string {
+    const porcentaje = this.getPorcentaje(status);
+    if (porcentaje >= 100) return '#2D7A4F';
+    if (porcentaje >= 50) return '#009ACD';
+    if (porcentaje > 0) return '#D68E2E';
+    return '#6c757d';
   }
 }

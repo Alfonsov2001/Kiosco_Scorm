@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+// Quitamos HttpClient de aquí, ya no lo necesitamos directo
 import { UploadComponent } from '../../components/upload/upload.component';
 import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-dashboard-profesor',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, UploadComponent, FormsModule],
+  imports: [CommonModule, RouterModule, UploadComponent, FormsModule],
   templateUrl: './dashboard-profesor.html',
   styleUrls: ['./dashboard-profesor.css'],
 })
@@ -18,16 +18,17 @@ export class DashboardProfesor implements OnInit {
   cursosFiltrados: any[] = [];
   cargando = false;
 
-  private api = 'http://localhost:3000/api';
-
-  //Toolbar filtro categorias--modificar cuadno se cree en la bd
-  //Toolbar filtro categorias
   categorias: any[] = [];
   categoriaSeleccionada = '';
   searchTitulo = '';
   cursoSeleccionado: any = null;
 
-  constructor(private http: HttpClient, private router: Router, private dataService: DataService, private cd: ChangeDetectorRef) { }
+  constructor(
+    // private http: HttpClient, <--- YA NO LO NECESITAMOS, usamos el servicio
+    private router: Router, 
+    private dataService: DataService, 
+    private cd: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.recargar();
@@ -37,7 +38,7 @@ export class DashboardProfesor implements OnInit {
   cargarCategorias() {
     this.dataService.getCategorias().subscribe({
       next: (data) => {
-        console.log('✅ DashboardProfesor - Categorías cargadas:', data);
+        console.log('✅ Categorías cargadas:', data);
         this.categorias = data || [];
         this.cd.detectChanges();
       },
@@ -46,33 +47,42 @@ export class DashboardProfesor implements OnInit {
   }
 
   recargar(): void {
-    this.cargando = true;
+    this.cargando = true; // Activar spinner
 
-    this.http.get<any[]>(`${this.api}/cursos`).subscribe({
+    // ⚠️ CAMBIO CLAVE: Usamos dataService.getCursos() en lugar de this.http
+    this.dataService.getCursos().subscribe({
       next: (data) => {
+        console.log('📚 Cursos cargados correctamente:', data);
         this.cursos = data || [];
         this.aplicarFiltros();
-        this.cargando = false;
+        
+        this.cargando = false; // Desactivar spinner
+        this.cd.detectChanges(); // ⚠️ Forzar actualización de la vista
       },
       error: (e) => {
-        console.error(e);
+        console.error('❌ Error cargando cursos (Profesor):', e);
         this.cursos = [];
         this.cursosFiltrados = [];
-        this.cargando = false;
+        
+        this.cargando = false; // Desactivar spinner incluso si falla
+        this.cd.detectChanges(); // ⚠️ Forzar actualización de la vista
       },
     });
   }
 
   aplicarFiltros(): void {
     const q = this.searchTitulo.trim().toLowerCase();
-    const cat = this.categoriaSeleccionada;
+    // Convertimos a string por seguridad
+    const cat = this.categoriaSeleccionada ? String(this.categoriaSeleccionada) : '';
 
     this.cursosFiltrados = (this.cursos || []).filter((c) => {
       const titulo = String(c.titulo || '').toLowerCase();
       const matchTitulo = !q || titulo.includes(q);
-      // Cuando las tengas, tu API debería devolver c.categoria_id.
-      // Comparacion laxa por si vienen como string/number
-      const matchCategoria = !cat || c.categoria_id == cat;
+      
+      // Comparamos IDs como strings para evitar problemas de tipos (number vs string)
+      const cCatId = c.categoria_id != null ? String(c.categoria_id) : '';
+      const matchCategoria = !cat || cCatId === cat;
+      
       return matchTitulo && matchCategoria;
     });
   }
@@ -86,13 +96,12 @@ export class DashboardProfesor implements OnInit {
   }
 
   iniciarCurso(curso: any): void {
-    // Aquí luego implementaremos "continuar desde donde se quedó"
-    // Por ahora, navegación normal
+    this.dataService.cursoActual = curso;
     this.router.navigate(['/player', curso.id]);
   }
 
   onCursoSubido(): void {
+    console.log('🔄 Detectado nuevo curso, recargando...');
     this.recargar();
-    // Opcional: collapse el acordeón manual o automáticamente
   }
 }

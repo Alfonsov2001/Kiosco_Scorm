@@ -1,81 +1,115 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+// 1. IMPORTACIONES DE ANGULAR (Lo que te faltaba)
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
+
+// 2. IMPORTACIONES DE TUS SERVICIOS
+// IMPORTANTE: Verifica que estas rutas sean correctas según tu carpeta
 import { DataService } from '../../services/data.service';
 import { ScormService } from '../../services/scorm.service';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-player',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule], // Necesario para usar *ngIf
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css']
 })
 export class PlayerComponent implements OnInit, OnDestroy {
-  curso: any;
+  
+  // Variables
+  curso: any = null;
   urlSegura: SafeResourceUrl | undefined;
-  urlDebug: string = '';
+  cargando: boolean = true;
+  progresoActual: number = 0;
+  nombreUsuario: string = 'Alumno';
+  
+  // Suscripción para detectar cambios en tiempo real
+  private progresoSub: Subscription | undefined;
 
   constructor(
     private dataService: DataService,
     private scormService: ScormService,
     private router: Router,
     private route: ActivatedRoute,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit() {
-    // 1. Intentar obtener curso del servicio (memoria)
-    this.curso = this.dataService.cursoActual;
-    console.log('Player ngOnInit - Curso en memoria:', this.curso);
-
-    // 2. Si no está en memoria, intentar recuperarlo usando el ID de la URL
-    if (!this.curso) {
-      // Necesitamos castear a 'any' o asegurar que route está definido
+    try {
+      // Obtener el ID de la URL (ej: /player/5)
       const id = this.route.snapshot.paramMap.get('id');
-      console.log('Player - No hay curso en memoria. Recuperando ID de URL:', id);
+      
+      // --- LOGICA DE CURSO ---
+      this.curso = this.dataService.cursoActual;
+      // Si recargamos la página, el servicio pierde el dato, así que lo pedimos de nuevo
+      if (!this.curso || this.curso.id !== Number(id)) {
+        // Nota: Asegúrate de que tu DataService tenga el método 'getCurso'
+        // Si usas promesas o observables, ajústalo aquí. Asumo Observable convertido a Promise:
+        this.curso = await this.dataService.getCurso(Number(id)).toPromise(); 
+      }
 
-      if (id) {
-        try {
-          this.curso = await this.dataService.getCurso(Number(id)).toPromise();
-          if (!this.curso) throw new Error('Curso no encontrado');
-          console.log('Player - Curso recuperado:', this.curso);
-        } catch (e) {
-          console.error('Error recuperando curso:', e);
-          this.router.navigate(['/dashboard']);
-          return;
-        }
-      } else {
-        console.warn('ID nulo en URL, volviendo al dashboard');
-        this.router.navigate(['/dashboard']);
+      // --- LOGICA DE USUARIO ---
+      let usuario = this.dataService.usuarioActual;
+      if (!usuario) {
+        const stored = localStorage.getItem('usuarioActual');
+        if (stored) usuario = JSON.parse(stored);
+      }
+      this.nombreUsuario = usuario ? usuario.nombre : 'Alumno';
+
+      // Seguridad: Si no hay curso o usuario, mandar al login
+      if (!this.curso || !usuario) {
+        this.router.navigate(['/login']);
         return;
       }
-    }
 
-    // 3. Renderizar Iframe INMEDIATAMENTE (para que no se quede en blanco)
-    const rutaCompleta = `http://localhost:3000${this.curso.ruta_carpeta}/${this.curso.punto_entrada}`;
-    console.log('Cargando iframe:', rutaCompleta);
-    this.urlSegura = this.sanitizer.bypassSecurityTrustResourceUrl(rutaCompleta);
-
-    // 4. Inicializar SCORM en segundo plano (sin bloquear UI)
-    const usuario = this.dataService.usuarioActual;
-    if (usuario && usuario.id) {
-      console.log('Inicializando SCORM para usuario:', usuario.id);
+      // --- INICIAR SCORM ---
       this.scormService.initScormAPI(this.curso.id, usuario.id);
 
-      // Llamada asíncrona no bloqueante
-      this.scormService.cargarEstadoInicial().catch(e => {
-        console.error('Error no crítico cargando estado SCORM en background:', e);
+      // Suscribirse al progreso para actualizar la barra verde
+      this.progresoSub = this.scormService.progresoRealtime.subscribe(p => {
+        this.progresoActual = p;
+        this.cdr.detectChanges(); // Forzar actualización visual
       });
+
+      // Cargar donde se quedó la última vez
+      try { await this.scormService.cargarEstadoInicial(); } catch(e){}
+
+      // --- CONSTRUIR URL DEL IFRAME ---
+      let ruta = this.curso.ruta_carpeta;
+      if (!ruta.startsWith('/')) ruta = '/' + ruta;
+      
+      const urlFinal = `${ruta}/${this.curso.punto_entrada}`;
+      
+      // "Sanitizar" la URL para que Angular confíe en ella
+      this.urlSegura = this.sanitizer.bypassSecurityTrustResourceUrl(urlFinal);
+      
+      // ¡Listo! Quitamos el spinner
+      this.cargando = false;
+      this.cdr.detectChanges();
+
+    } catch (e) {
+      console.error('Error cargando el player:', e);
+      this.cargando = false;
     }
   }
 
   ngOnDestroy() {
-    // Opcional: Forzar guardado al salir
+    // Al salir, guardar todo y desuscribirse para no dejar basura en memoria
+    if (this.progresoSub) this.progresoSub.unsubscribe();
+    this.scormService.forceCommit();
   }
 
   volver() {
-    this.router.navigate(['/dashboard']);
+    // Guardar antes de salir
+    this.scormService.forceCommit();
+    
+    // Redirigir según si es profe o alumno
+    const usuario = this.dataService.usuarioActual;
+    const ruta = (usuario?.rol === 'profesor') ? '/dashboard-profesor' : '/dashboard';
+    this.router.navigate([ruta]);
   }
 }

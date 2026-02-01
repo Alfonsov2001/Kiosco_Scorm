@@ -11,30 +11,118 @@
 .sidebar-container h5 {
   letter-spacing: 0.4px;
   font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
 }
 
-/* tarjetas de recientes */
-.sidebar-container .card {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  transition: transform 120ms ease, background 120ms ease;
+/* CARDS DE RECIENTES */
+.card-reciente {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.sidebar-container .card:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.18);
+.card-reciente:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.sidebar-container .card-title {
+.card-reciente .card-title {
   color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+/* ICONO DE ESTADO */
+.status-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.status-icon.status-completado { color: #2D7A4F; }
+.status-icon.status-progreso { color: #009ACD; }
+.status-icon.status-visto { color: #D68E2E; }
+.status-icon.status-suspendido { color: #C4324D; }
+.status-icon.status-pendiente { color: rgba(255, 255, 255, 0.5); }
+
+/* BARRA DE PROGRESO */
+.progress {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
   font-weight: 700;
+  font-size: 0.75rem;
 }
 
+/* PUNTUACIÓN */
+.score-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.score-mini i {
+  font-size: 0.7rem;
+}
+
+/* TEXTOS */
 .sidebar-container .text-muted {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 0.75rem;
 }
 
+/* ESTADO VACÍO */
+.empty-state {
+  opacity: 0.7;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 0.85rem;
+}
+
+.empty-state small {
+  font-size: 0.75rem;
+}
+
+/* RESPONSIVE */
 @media (max-width: 900px) {
   :host { height: auto; }
   .sidebar-container { border-radius: 14px; margin-bottom: 12px; }
+  .sidebar-list {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .card-reciente {
+    min-width: 200px;
+    flex-shrink: 0;
+  }
 }

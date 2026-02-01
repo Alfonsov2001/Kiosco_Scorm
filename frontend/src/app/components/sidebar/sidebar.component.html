@@ -1,17 +1,47 @@
 <div class="sidebar-container p-3">
-  <h5 class="text-white mb-3">ÚLTIMOS VISITADOS</h5>
+  <h5 class="text-white mb-3">
+    <i class="bi bi-clock-history me-2"></i>ÚLTIMOS VISITADOS
+  </h5>
 
   <div class="sidebar-list">
-    <div class="card mb-2 bg-dark text-white border-secondary" *ngFor="let c of recientes" (click)="abrir(c)"
-      style="cursor: pointer;">
+    <div class="card mb-2 card-reciente" *ngFor="let c of recientes" (click)="abrir(c)">
       <div class="card-body p-2">
-        <h6 class="card-title mb-1 text-truncate">{{ c.titulo }}</h6>
-        <small class="text-muted">{{ c.fecha_actualizacion | date:'short' }}</small>
+        <!-- Título y estado -->
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h6 class="card-title mb-0 text-truncate flex-grow-1 pe-2">{{ c.titulo }}</h6>
+          <i class="bi status-icon" [ngClass]="[getEstadoIcono(c.cmi_lesson_status), getEstadoClase(c.cmi_lesson_status)]"></i>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress mt-2" style="height: 4px;">
+          <div class="progress-bar" role="progressbar" 
+            [style.width.%]="getPorcentaje(c.cmi_lesson_status)"
+            [style.backgroundColor]="getProgresoColor(c.cmi_lesson_status)">
+          </div>
+        </div>
+
+        <!-- Info adicional -->
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <small class="text-muted">
+            <i class="bi bi-calendar3"></i> {{ c.fecha_actualizacion | date:'shortDate' }}
+          </small>
+          <small class="progress-text" [style.color]="getProgresoColor(c.cmi_lesson_status)">
+            {{ getPorcentaje(c.cmi_lesson_status) }}%
+          </small>
+        </div>
+
+        <!-- Puntuación si existe -->
+        <div *ngIf="c.cmi_score_raw > 0" class="score-mini mt-1">
+          <i class="bi bi-star-fill"></i> {{ c.cmi_score_raw }} pts
+        </div>
       </div>
     </div>
 
-    <div *ngIf="recientes.length === 0" class="text-muted text-center small">
-      No hay actividad reciente.
+    <!-- Mensaje si no hay recientes -->
+    <div *ngIf="recientes.length === 0" class="empty-state text-center py-4">
+      <i class="bi bi-inbox empty-icon"></i>
+      <p class="text-muted mb-0">No hay actividad reciente.</p>
+      <small class="text-muted">Los cursos que visites aparecerán aquí</small>
     </div>
   </div>
 </div>
