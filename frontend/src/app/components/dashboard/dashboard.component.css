@@ -49,9 +49,17 @@
   font-size: 1.4rem;
 }
 
-.stat-card.stat-success .stat-icon { background: #2D7A4F; }
-.stat-card.stat-progress .stat-icon { background: #009ACD; }
-.stat-card.stat-score .stat-icon { background: #D68E2E; }
+.stat-card.stat-success .stat-icon {
+  background: #2D7A4F;
+}
+
+.stat-card.stat-progress .stat-icon {
+  background: #009ACD;
+}
+
+.stat-card.stat-score .stat-icon {
+  background: #D68E2E;
+}
 
 .stat-info {
   display: flex;
@@ -89,12 +97,45 @@
   font-size: 1.1rem;
 }
 
-/* TOOLBAR */
-.toolbar-container {
-  background: #fff;
-  padding: 16px;
+/* ====== FILTROS PERSONALIZADOS ====== */
+.custom-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 15px;
+  background-color: #f8f9fa;
+  padding: 15px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-item {
+  flex: 1;
+}
+
+.filter-search {
+  flex: 1.5;
+  /* Un poco más de espacio para la búsqueda */
+}
+
+.filter-action {
+  padding-bottom: 2px;
+}
+
+.cerulean-input {
+  background-color: #009ACD !important;
+  color: white !important;
+  border-color: #0086b3 !important;
+}
+
+.cerulean-input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.cerulean-input-addon {
+  background-color: #0086b3 !important;
+  color: white !important;
+  border-color: #0086b3 !important;
 }
 
 /* CARDS DE CURSOS */
@@ -314,14 +355,35 @@
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 900px) {
+  .custom-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-item,
+  .filter-search {
+    width: 100%;
+  }
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .stats-panel { padding: 12px; }
-  .stat-card { padding: 12px; }
-  .stat-number { font-size: 1.4rem; }
-  .stat-icon { width: 40px; height: 40px; font-size: 1.1rem; }
-  .toolbar-container { padding: 12px; }
-  .toolbar-container .d-flex { flex-direction: column; align-items: stretch !important; }
-  .toolbar-container .input-group,
-  .toolbar-container .form-select { max-width: 100% !important; width: 100%; }
+  .stats-panel {
+    padding: 12px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
 }
