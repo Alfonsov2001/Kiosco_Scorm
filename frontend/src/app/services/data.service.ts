@@ -56,8 +56,9 @@ export interface EstadisticasUsuario {
   providedIn: 'root'
 })
 export class DataService {
-  // Puerto del servidor backend
-  public baseUrl = 'http://localhost:3000';
+  // No usamos URL absoluta para que pase por el Proxy de Angular (puerto 4200)
+  // y así evitar problemas de Cross-Origin con los IFrames.
+  public baseUrl = '';
 
   public usuarioActual: any = null;
   public cursoActual: any = null;

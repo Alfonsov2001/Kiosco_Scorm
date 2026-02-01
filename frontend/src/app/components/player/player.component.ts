@@ -83,10 +83,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
       if (!ruta.startsWith('/')) ruta = '/' + ruta;
 
       // EXPLICACIÓN DEL FIX: 
-      // Anteponemos la URL del backend (http://localhost:3000) para que el iframe 
-      // busque los archivos en el servidor Express y no en el propio Angular (4200).
-      // Si no hacemos esto, Angular no encuentra el archivo, da 404 y redirige al login.
-      const urlFinal = `${this.dataService.baseUrl}${ruta}/${this.curso.punto_entrada}`;
+      // Usamos una ruta RELATIVA (/cursos) que será gestionada por el Proxy de Angular.
+      // Así el iframe y la app comparten el mismo origen (puerto 4200) y el SCORM
+      // puede encontrar la API en window.parent sin errores de seguridad.
+      const urlFinal = `${ruta}/${this.curso.punto_entrada}`;
 
       console.log('🔗 Cargando curso desde:', urlFinal);
 

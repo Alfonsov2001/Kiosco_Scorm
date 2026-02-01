@@ -1,0 +1,130 @@
+{
+  "schema": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": null,
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "titulo",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "descripcion",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "ruta_carpeta",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "punto_entrada",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "fecha_subida",
+      "Type": "datetime",
+      "Null": "YES",
+      "Key": "",
+      "Default": "current_timestamp()",
+      "Extra": ""
+    },
+    {
+      "Field": "categoria_id",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "imagen_url",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    }
+  ],
+  "cursos": [
+    {
+      "id": 4,
+      "titulo": "Prevencion de riesgos",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769361662555",
+      "punto_entrada": "ud01/ap01010101.html",
+      "fecha_subida": "2026-01-25T17:21:03.000Z",
+      "categoria_id": 1,
+      "imagen_url": null
+    },
+    {
+      "id": 5,
+      "titulo": "pruebaimagen",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769951854585",
+      "punto_entrada": "ud01/ap01010101.html",
+      "fecha_subida": "2026-02-01T13:17:35.000Z",
+      "categoria_id": 1,
+      "imagen_url": "/uploads/imagenes/img-1769951854581.jpg"
+    },
+    {
+      "id": 10,
+      "titulo": "virus",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769963365152",
+      "punto_entrada": "ap01010101.html",
+      "fecha_subida": "2026-02-01T16:29:25.000Z",
+      "categoria_id": 1,
+      "imagen_url": "/uploads/imagenes/img-1769963365149.jpg"
+    },
+    {
+      "id": 13,
+      "titulo": "prueba2 scorm cloud",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769963681160",
+      "punto_entrada": "ap01020101.html",
+      "fecha_subida": "2026-02-01T16:34:41.000Z",
+      "categoria_id": 1,
+      "imagen_url": "/uploads/imagenes/img-1769963681159.png"
+    },
+    {
+      "id": 14,
+      "titulo": "prueba4",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769965515171",
+      "punto_entrada": "scormdriver/indexAPI.html",
+      "fecha_subida": "2026-02-01T17:05:16.000Z",
+      "categoria_id": 1,
+      "imagen_url": "/uploads/imagenes/img-1769965515168.png"
+    },
+    {
+      "id": 15,
+      "titulo": "prueba5",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1769967935062",
+      "punto_entrada": "scormdriver/indexAPI.html",
+      "fecha_subida": "2026-02-01T17:45:36.000Z",
+      "categoria_id": 2,
+      "imagen_url": "/uploads/imagenes/img-1769967935056.webp"
+    }
+  ]
+}

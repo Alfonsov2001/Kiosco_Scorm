@@ -1,0 +1,63 @@
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# =========================
+# Node / Frontend / Backend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Builds
+dist/
+build/
+out/
+coverage/
+
+# =========================
+# Env / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# SCORM uploads / generated content (NO subir a Git)
+# =========================
+# Tu carpeta de cursos (según tu nombre exacto)
+Cursos Scorm/
+Cursos Scorm/**
+
+# Si en algún momento guardas cursos dentro del backend (por si acaso)
+backend/public/cursos/
+backend/public/cursos/**
+backend/public/uploads/
+backend/public/uploads/**
+
+# Archivos grandes típicos en SCORM
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.zip
+
+# =========================
+# Otros temporales
+# =========================
+tmp/
+temp/
