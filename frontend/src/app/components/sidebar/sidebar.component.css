@@ -33,9 +33,9 @@
 }
 
 .card-reciente .card-title {
-  color: white !important;
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
   line-height: 1.3;
 }
 
@@ -47,6 +47,12 @@
 
 .status-icon.status-completado {
   color: #2D7A4F;
+}
+
+/* En los recuadros azules de la barra lateral, los iconos de estado deben ser blancos para verse */
+.card-reciente .status-icon {
+  color: #ffffff !important;
+  opacity: 0.9;
 }
 
 .status-icon.status-progreso {
@@ -101,11 +107,19 @@
 
 /* TEXTOS */
 .card-reciente .text-muted {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #ffffff !important;
+  opacity: 0.95;
+}
+
+/* Forzar que el porcentaje también sea blanco o muy claro si el usuario lo prefiere */
+.card-reciente .progress-text {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-container .text-muted {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: #ffffff !important;
+  opacity: 0.8;
   font-size: 0.75rem;
 }
 
