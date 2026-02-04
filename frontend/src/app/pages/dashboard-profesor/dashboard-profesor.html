@@ -105,13 +105,19 @@
           <div class="row">
             <div class="col-md-8">
               <p class="lead">{{ cursoSeleccionado.descripcion || 'Sin descripción disponible.' }}</p>
+              <div *ngIf="cursoSeleccionado.archivos_presentes === false" class="alert alert-warning py-2 small">
+                <i class="bi bi-exclamation-triangle-fill"></i> <strong>Atención:</strong> Los archivos de este curso no están disponibles en el servidor. No se puede iniciar ni descargar.
+              </div>
               <hr>
               <p><strong>Fecha de subida:</strong> {{ cursoSeleccionado.fecha_subida | date:'medium' }}</p>
-              <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
+              <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)" [disabled]="cursoSeleccionado.archivos_presentes === false">
                 <i class="bi bi-play-circle"></i> Iniciar Curso
               </button>
               <button class="btn btn-danger btn-lg ms-2" (click)="eliminarCurso(cursoSeleccionado.id)">
                 <i class="bi bi-trash"></i> Eliminar
+              </button>
+              <button class="btn btn-outline-info btn-lg ms-2" (click)="descargarCurso(cursoSeleccionado)" [disabled]="cursoSeleccionado.archivos_presentes === false">
+                <i class="bi bi-download"></i> Descargar SCORM
               </button>
               <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
             </div>

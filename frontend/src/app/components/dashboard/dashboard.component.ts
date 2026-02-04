@@ -191,6 +191,38 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/player', curso.id]);
   }
 
+  descargarCurso(curso: any): void {
+    if (!curso || !curso.id) return;
+    
+    this.dataService.descargarCurso(curso.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${curso.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.zip`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al descargar:', err);
+        if (err.error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const errorObj = JSON.parse(reader.result as string);
+              alert('Error al descargar: ' + (errorObj.mensaje || 'Error desconocido'));
+            } catch (e) {
+              alert('No se pudo descargar el curso.');
+            }
+          };
+          reader.readAsText(err.error);
+        } else {
+          alert('No se pudo descargar el curso.');
+        }
+      }
+    });
+  }
+
   salir() {
     this.dataService.usuarioActual = null;
     this.router.navigate(['/login']);
