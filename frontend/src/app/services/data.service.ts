@@ -286,7 +286,7 @@ export class DataService {
             ...curso,
             progreso: progreso || null,
             estado: this.calcularEstado(progreso?.cmi_lesson_status),
-            porcentaje: this.calcularPorcentaje(progreso?.cmi_lesson_status)
+            porcentaje: this.calcularPorcentaje(progreso?.cmi_lesson_status, progreso?.cmi_score_raw, progreso?.cmi_suspend_data)
           };
         });
       }),
@@ -342,7 +342,30 @@ export class DataService {
     }
   }
 
-  private calcularPorcentaje(status: string | undefined): number {
+  private calcularPorcentaje(status: string | undefined, scoreRaw?: number, suspendData?: string): number {
+    // 🆕 PRIORIDAD 1: Usar el score_raw que ahora contiene el progreso real calculado
+    if (scoreRaw !== undefined && scoreRaw > 0 && scoreRaw <= 100) {
+      return Math.round(scoreRaw);
+    }
+
+    // 🆕 PRIORIDAD 2: Intentar extraer progreso desde suspend_data
+    if (suspendData) {
+      try {
+        const data = JSON.parse(suspendData);
+        if (data._tracking?.progressMeasure > 0) {
+          return Math.round(data._tracking.progressMeasure * 100);
+        }
+        if (data._tracking?.paginas && data._tracking.paginas.length > 0) {
+          // Estimado: máximo 20 páginas
+          return Math.min(Math.round((data._tracking.paginas.length / 20) * 100), 95);
+        }
+        if (data._tracking?.interactionCount > 0) {
+          return Math.min(data._tracking.interactionCount * 5, 90);
+        }
+      } catch (e) { /* fallback a lógica de status */ }
+    }
+
+    // PRIORIDAD 3: Lógica basada en status (fallback)
     if (!status) return 0;
     const s = status.toLowerCase().trim();
     switch (s) {
@@ -351,9 +374,9 @@ export class DataService {
       case 'failed':
         return 100;
       case 'incomplete':
-        return 50;
+        return 10;
       case 'browsed':
-        return 25;
+        return 5;
       default:
         return 0;
     }
