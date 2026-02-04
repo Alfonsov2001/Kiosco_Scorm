@@ -125,6 +125,16 @@
       "fecha_subida": "2026-02-01T17:45:36.000Z",
       "categoria_id": 2,
       "imagen_url": "/uploads/imagenes/img-1769967935056.webp"
+    },
+    {
+      "id": 16,
+      "titulo": "ddfsgvff",
+      "descripcion": "Curso SCORM subido",
+      "ruta_carpeta": "/cursos/scorm-1770200074048",
+      "punto_entrada": "ud01/ap01010101.html",
+      "fecha_subida": "2026-02-04T10:14:34.000Z",
+      "categoria_id": null,
+      "imagen_url": null
     }
   ]
 }

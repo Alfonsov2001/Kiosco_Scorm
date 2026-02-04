@@ -26,6 +26,7 @@ export interface Curso {
   progreso?: Progreso | null;
   porcentaje?: number;
   estado?: 'completed' | 'passed' | 'failed' | 'incomplete' | 'browsed' | 'not attempted';
+  archivos_presentes?: boolean;
 }
 
 export interface Progreso {
@@ -195,6 +196,12 @@ export class DataService {
         this.guardarVisitasEnStorage(nuevos);
       })
     );
+  }
+
+  descargarCurso(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/api/cursos/${id}/descargar`, {
+      responseType: 'blob'
+    });
   }
 
   subirCurso(titulo: string, descripcion: string, archivo: File, categoriaId: string = '', imagen?: File): Observable<any> {

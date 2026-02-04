@@ -127,8 +127,20 @@ exports.subirCurso = async (req, res) => {
 exports.obtenerCursos = async (req, res) => {
     try {
         const cursos = await Curso.getAll();
-        res.json(cursos);
+
+        // Añadir verificación de existencia de archivos
+        const cursosConSalud = cursos.map(c => {
+            let existe = false;
+            if (c.ruta_carpeta) {
+                const rutaAbsoluta = path.join(__dirname, '../../public', c.ruta_carpeta);
+                existe = fs.existsSync(rutaAbsoluta);
+            }
+            return { ...c, archivos_presentes: existe };
+        });
+
+        res.json(cursosConSalud);
     } catch (error) {
+        console.error('Error obteniendo cursos:', error);
         res.status(500).json({ mensaje: 'Error obteniendo cursos' });
     }
 };
@@ -138,7 +150,14 @@ exports.obtenerCurso = async (req, res) => {
     try {
         const curso = await Curso.getById(id);
         if (!curso) return res.status(404).json({ mensaje: 'Curso no encontrado' });
-        res.json(curso);
+
+        let existe = false;
+        if (curso.ruta_carpeta) {
+            const rutaAbsoluta = path.join(__dirname, '../../public', curso.ruta_carpeta);
+            existe = fs.existsSync(rutaAbsoluta);
+        }
+
+        res.json({ ...curso, archivos_presentes: existe });
     } catch (error) {
         res.status(500).json({ mensaje: 'Error obteniendo curso' });
     }
@@ -199,6 +218,49 @@ exports.eliminarCurso = async (req, res) => {
     } catch (error) {
         console.error('❌ ERROR FATAL EN ELIMINACIÓN:', error);
         res.status(500).json({ mensaje: 'Error eliminando curso', error: error.message });
+    }
+};
+
+exports.descargarCurso = async (req, res) => {
+    const { id } = req.params;
+    console.log(`\n--- 📥 PETICIÓN DE DESCARGA: ID ${id} ---`);
+
+    try {
+        const curso = await Curso.getById(id);
+        if (!curso) {
+            return res.status(404).json({ mensaje: 'Curso no encontrado' });
+        }
+
+        if (!curso.ruta_carpeta) {
+            return res.status(400).json({ mensaje: 'El curso no tiene una carpeta asociada' });
+        }
+
+        const rutaAbsoluta = path.join(__dirname, '../../public', curso.ruta_carpeta);
+        console.log('   Ruta SCORM para descargar:', rutaAbsoluta);
+
+        if (!fs.existsSync(rutaAbsoluta)) {
+            return res.status(404).json({ mensaje: 'Los archivos del curso no existen en el servidor' });
+        }
+
+        // Crear un ZIP temporal
+        const zip = new AdmZip();
+        zip.addLocalFolder(rutaAbsoluta);
+
+        const nombreArchivo = `${curso.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.zip`;
+        const buffer = zip.toBuffer();
+
+        res.set({
+            'Content-Type': 'application/zip',
+            'Content-Disposition': `attachment; filename="${nombreArchivo}"`,
+            'Content-Length': buffer.length
+        });
+
+        res.send(buffer);
+        console.log('   ✅ Descarga enviada correctamente');
+
+    } catch (error) {
+        console.error('❌ ERROR EN DESCARGA:', error);
+        res.status(500).json({ mensaje: 'Error al procesar la descarga', error: error.message });
     }
 };
 

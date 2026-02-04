@@ -202,6 +202,39 @@ export class DashboardProfesor implements OnInit {
     });
   }
 
+  descargarCurso(curso: any): void {
+    if (!curso || !curso.id) return;
+    
+    this.dataService.descargarCurso(curso.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${curso.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.zip`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al descargar:', err);
+        // Si el backend envió un error en JSON, intentamos leerlo
+        if (err.error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const errorObj = JSON.parse(reader.result as string);
+              alert('Error al descargar: ' + (errorObj.mensaje || 'Error desconocido'));
+            } catch (e) {
+              alert('No se pudo descargar el curso.');
+            }
+          };
+          reader.readAsText(err.error);
+        } else {
+          alert('No se pudo descargar el curso.');
+        }
+      }
+    });
+  }
+
   iniciarCurso(curso: any): void {
     this.dataService.cursoActual = curso;
     this.router.navigate(['/player', curso.id]);
