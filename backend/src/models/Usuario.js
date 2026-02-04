@@ -12,9 +12,10 @@ class Usuario {
 
     static async create(data) {
         try {
-            const { email } = data;
-            const [result] = await db.query('INSERT INTO usuarios (email) VALUES (?)', [email]);
-            return { id: result.insertId, email, rol: 'alumno' };
+            const { email, rol } = data; // Aceptamos rol
+            const rolFinal = rol || 'alumno'; // Default alumno
+            const [result] = await db.query('INSERT INTO usuarios (email, rol) VALUES (?, ?)', [email, rolFinal]);
+            return { id: result.insertId, email, rol: rolFinal };
         } catch (error) {
             throw error;
         }

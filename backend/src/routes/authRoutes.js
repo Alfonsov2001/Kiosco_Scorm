@@ -4,5 +4,6 @@ const cursoController = require('../controllers/cursoController');
 
 // POST /api/login
 router.post('/login', cursoController.loginUsuario);
+router.post('/register', cursoController.registrarUsuario);
 
 module.exports = router;

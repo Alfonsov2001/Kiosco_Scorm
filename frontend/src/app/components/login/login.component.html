@@ -1,20 +1,34 @@
 <div class="login-page d-flex align-items-center justify-content-center py-5">
   <div class="card login-card p-4">
     <div class="text-center mb-3">
-      <img src="assets/images/logocampus.png" alt="Logo Campus" class="login-logo" onError="this.style.display='none'" />
+      <img src="assets/images/logocampus.png" alt="Logo Campus" class="login-logo"
+        onError="this.style.display='none'" />
     </div>
 
-    <h1 class="h3 mb-1 text-center">Bienvenido</h1>
-    <p class="text-muted mb-3 text-center">Introduce tu correo para acceder.</p>
+    <h1 class="h3 mb-1 text-center" *ngIf="!isRegistering">Bienvenido</h1>
+    <h1 class="h3 mb-1 text-center" *ngIf="isRegistering">Crear Cuenta</h1>
 
-    <input
-      class="form-control mb-2"
-      type="email"
-      [(ngModel)]="email"
-      placeholder="usuario@ejemplo.com"
-      (keyup.enter)="entrar()"
-      [disabled]="cargando"
-    />
+    <p class="text-muted mb-3 text-center" *ngIf="!isRegistering">Introduce tu correo para acceder.</p>
+    <p class="text-muted mb-3 text-center" *ngIf="isRegistering">Completa tus datos para registrarte.</p>
+
+    <!-- INPUT EMAIL -->
+    <input class="form-control mb-2" type="email" [(ngModel)]="email" placeholder="usuario@ejemplo.com"
+      (keyup.enter)="entrar()" [disabled]="cargando" />
+
+    <!-- CAMPOS EXTRA DE REGISTRO -->
+    <div *ngIf="isRegistering" class="mb-2 transition-fade">
+      <label class="form-label small fw-bold mb-1">Soy:</label>
+      <select class="form-select mb-2" [(ngModel)]="rol">
+        <option value="alumno">Alumno</option>
+        <option value="profesor">Profesor</option>
+      </select>
+
+      <div *ngIf="rol === 'profesor'" class="mt-2 text-start bg-light p-2 rounded border">
+        <label class="form-label small text-muted mb-1">Código de docente:</label>
+        <input type="password" class="form-control form-control-sm" [(ngModel)]="codigoDocente"
+          placeholder="Clave facilitada por el centro" (keyup.enter)="entrar()" />
+      </div>
+    </div>
 
     <div *ngIf="error" class="alert alert-danger py-2 mb-3 small" role="alert">
       {{ error }}
@@ -22,9 +36,18 @@
 
     <div *ngIf="!error" class="mb-3"></div>
 
-    <button class="btn btn-primary w-100" (click)="entrar()" [disabled]="cargando">
-      <span *ngIf="!cargando">Acceder</span>
-      <span *ngIf="cargando">Verificando...</span>
+    <button class="btn btn-primary w-100 mb-3" (click)="entrar()" [disabled]="cargando">
+      <span *ngIf="!cargando && !isRegistering">Acceder</span>
+      <span *ngIf="!cargando && isRegistering">Crear Cuenta</span>
+      <span *ngIf="cargando">Procesando...</span>
     </button>
+
+    <!-- ENLACE TOGGLE -->
+    <div class="text-center">
+      <a href="javascript:void(0)" class="small text-decoration-none" (click)="toggleMode()">
+        <span *ngIf="!isRegistering">¿No tienes cuenta? <strong>Regístrate aquí</strong></span>
+        <span *ngIf="isRegistering">¿Ya tienes cuenta? <strong>Inicia sesión</strong></span>
+      </a>
+    </div>
   </div>
 </div>

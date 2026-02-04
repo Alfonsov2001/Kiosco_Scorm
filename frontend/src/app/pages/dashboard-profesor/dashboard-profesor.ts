@@ -24,6 +24,8 @@ export class DashboardProfesor implements OnInit {
   searchTitulo = '';
   filtroEstado = '';
   cursoSeleccionado: any = null;
+  errorMensaje: string = '';
+  confirmandoEliminacion: boolean = false;
 
   // Estadísticas
   estadisticas: any = {
@@ -42,7 +44,13 @@ export class DashboardProfesor implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.usuario = this.dataService.usuarioActual || { email: 'Profesor', id: 0 };
+    this.usuario = this.dataService.usuarioActual;
+
+    if (!this.usuario) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.recargar();
     this.cargarCategorias();
   }
@@ -167,20 +175,31 @@ export class DashboardProfesor implements OnInit {
     this.cursoSeleccionado = null;
   }
 
+  solicitarConfirmacionEliminacion(): void {
+    this.confirmandoEliminacion = true;
+    this.errorMensaje = '';
+  }
+
+  cancelarEliminacion(): void {
+    this.confirmandoEliminacion = false;
+  }
+
   eliminarCurso(id: number): void {
-    if (confirm('¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer y borrará todos los archivos y el progreso asociado.')) {
-      this.dataService.eliminarCurso(id).subscribe({
-        next: () => {
-          this.cerrarDetalle();
-          this.recargar();
-        },
-        error: (err) => {
-          console.error('Error al eliminar:', err);
-          const errorMsg = err.error?.mensaje || err.message || 'Error desconocido';
-          alert('No se pudo eliminar el curso. Detalle: ' + errorMsg);
-        }
-      });
-    }
+    this.errorMensaje = '';
+    this.dataService.eliminarCurso(id).subscribe({
+      next: () => {
+        this.confirmandoEliminacion = false;
+        this.cerrarDetalle();
+        this.recargar();
+      },
+      error: (err) => {
+        console.error('Error al eliminar:', err);
+        const errorMsg = err.error?.mensaje || err.message || 'Error desconocido';
+        this.errorMensaje = 'No se pudo eliminar el curso. Detalle: ' + errorMsg;
+        this.confirmandoEliminacion = false;
+        this.cd.detectChanges();
+      }
+    });
   }
 
   iniciarCurso(curso: any): void {

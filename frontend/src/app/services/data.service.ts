@@ -64,6 +64,7 @@ export class DataService {
   public cursoActual: any = null;
 
   constructor(private http: HttpClient) {
+    this.cargarUsuarioDesdeStorage();
     this.cargarVisitasDesdeStorage();
   }
 
@@ -117,12 +118,34 @@ export class DataService {
     }
   }
 
+  private cargarUsuarioDesdeStorage() {
+    try {
+      const stored = localStorage.getItem('usuarioActual');
+      if (stored) {
+        this.usuarioActual = JSON.parse(stored);
+        console.log('Sessión recuperada:', this.usuarioActual);
+      }
+    } catch (e) {
+      console.warn('No se pudo recuperar el usuario de localStorage', e);
+    }
+  }
+
   // ==================== AUTENTICACIÓN Y SESIÓN ====================
 
   login(email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/login`, { email }).pipe(
       tap((usuario: any) => {
         // Guardamos el usuario en memoria y localStorage al entrar
+        this.usuarioActual = usuario;
+        localStorage.setItem('usuarioActual', JSON.stringify(usuario));
+      })
+    );
+  }
+
+  register(email: string, rol: string, codigoDocente?: string): Observable<any> {
+    const payload = { email, rol, codigoDocente };
+    return this.http.post(`${this.baseUrl}/api/register`, payload).pipe(
+      tap((usuario: any) => {
         this.usuarioActual = usuario;
         localStorage.setItem('usuarioActual', JSON.stringify(usuario));
       })
@@ -161,8 +184,13 @@ export class DataService {
     return this.http.delete(`${this.baseUrl}/api/cursos/${id}`).pipe(
       tap(() => {
         // Al eliminar con éxito, actualizamos la lista de visitas
+        // Usamos una comparación robusta para asegurar que barremos el curso
         const actuales = [...this.cursosVisitadosSubject.value];
-        const nuevos = actuales.filter(c => c.id !== id);
+        const nuevos = actuales.filter(c => {
+          const cursoId = c.id || c.curso_id;
+          return Number(cursoId) !== Number(id);
+        });
+
         this.cursosVisitadosSubject.next(nuevos);
         this.guardarVisitasEnStorage(nuevos);
       })
@@ -204,12 +232,16 @@ export class DataService {
     );
   }
 
-  // ⚠️ MODIFICADO: Ahora actualiza la barra lateral automáticamente
+  // ⚠️ MODIFICADO: Ahora actualiza la barra lateral automáticamente y persiste
   obtenerRecientes(usuarioId: number): Observable<any[]> {
+    if (!usuarioId) return of([]);
+
     return this.http.get<any[]>(`${this.baseUrl}/api/progreso/recientes?usuarioId=${usuarioId}`).pipe(
       tap(cursos => {
         // Emitimos el nuevo valor para que el Sidebar se actualice
         this.cursosVisitadosSubject.next(cursos);
+        // Persistimos en localStorage para que no vuelvan a aparecer si se borraron
+        this.guardarVisitasEnStorage(cursos);
       }),
       catchError(() => {
         this.cursosVisitadosSubject.next([]);

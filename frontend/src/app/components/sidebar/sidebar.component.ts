@@ -23,6 +23,11 @@ export class SidebarComponent implements OnInit {
     this.dataService.cursosVisitados$.subscribe(cursos => {
       this.recientes = cursos || [];
     });
+
+    // Forzamos actualización desde el servidor nada más cargar para limpiar 'fantasmas' de localStorage
+    if (this.usuario?.id) {
+      this.dataService.obtenerRecientes(this.usuario.id).subscribe();
+    }
   }
 
   abrir(curso: any) {

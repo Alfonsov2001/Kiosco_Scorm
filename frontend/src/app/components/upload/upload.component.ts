@@ -88,8 +88,8 @@ export class UploadComponent implements OnInit {
       .subscribe({
         next: (res) => {
           console.log('Éxito:', res);
-          alert('¡Curso subido correctamente!');
-          this.mensaje = '';
+          this.mensaje = '✅ ¡Curso subido correctamente!';
+          this.esError = false;
           this.titulo = '';
           this.descripcion = '';
           this.archivoSeleccionado = null;

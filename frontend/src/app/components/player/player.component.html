@@ -9,12 +9,12 @@
     </div>
     <div class="header-right">
       <span class="username">{{ nombreUsuario }}</span>
-      <button class="btn-salir" (click)="volver()">SALIR</button>
+      <button class="btn-salir" (click)="volver()">salir</button>
     </div>
   </header>
 
   <main class="player-body">
-    
+
     <div class="course-status-bar" *ngIf="!cargando">
       <div class="course-info">
         <h2 class="course-title">{{ curso?.titulo || 'Cargando título...' }}</h2>
@@ -33,11 +33,7 @@
     </div>
 
     <div class="iframe-container" *ngIf="urlSegura && !cargando">
-      <iframe 
-        [src]="urlSegura" 
-        class="scorm-iframe" 
-        frameborder="0" 
-        allowfullscreen>
+      <iframe [src]="urlSegura" class="scorm-iframe" frameborder="0" allowfullscreen>
       </iframe>
     </div>
   </main>

@@ -107,13 +107,35 @@
               <p class="lead">{{ cursoSeleccionado.descripcion || 'Sin descripción disponible.' }}</p>
               <hr>
               <p><strong>Fecha de subida:</strong> {{ cursoSeleccionado.fecha_subida | date:'medium' }}</p>
-              <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
-                <i class="bi bi-play-circle"></i> Iniciar Curso
-              </button>
-              <button class="btn btn-danger btn-lg ms-2" (click)="eliminarCurso(cursoSeleccionado.id)">
-                <i class="bi bi-trash"></i> Eliminar
-              </button>
-              <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
+
+              <!-- MENSAJE DE ERROR (si existe) -->
+              <div *ngIf="errorMensaje" class="alert alert-danger py-2 mb-3 small" role="alert">
+                {{ errorMensaje }}
+              </div>
+
+              <!-- CONFIRMACIÓN DE ELIMINACIÓN -->
+              <div *ngIf="confirmandoEliminacion" class="alert alert-warning py-3 mb-3" role="alert">
+                <p class="mb-2"><strong>⚠️ ¿Estás seguro?</strong></p>
+                <p class="small mb-3">Esta acción no se puede deshacer y borrará todos los archivos y el progreso
+                  asociado.</p>
+                <button class="btn btn-danger btn-sm me-2" (click)="eliminarCurso(cursoSeleccionado.id)">
+                  <i class="bi bi-trash"></i> Sí, eliminar
+                </button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelarEliminacion()">
+                  Cancelar
+                </button>
+              </div>
+
+              <!-- BOTONES DE ACCIÓN -->
+              <div *ngIf="!confirmandoEliminacion">
+                <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)">
+                  <i class="bi bi-play-circle"></i> Iniciar Curso
+                </button>
+                <button class="btn btn-danger btn-lg ms-2" (click)="solicitarConfirmacionEliminacion()">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+                <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
+              </div>
             </div>
             <div class="col-md-4 text-center">
               <!-- Imagen del curso -->

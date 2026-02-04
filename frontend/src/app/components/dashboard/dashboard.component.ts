@@ -45,7 +45,14 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.usuario = this.dataService.usuarioActual || { email: 'Invitado', id: 0 };
+    this.usuario = this.dataService.usuarioActual;
+
+    // Si no hay usuario ni en memoria ni en storage (el servicio ya intentó cargar), volvemos al login
+    if (!this.usuario) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.cargarCategorias();
     this.cargarCursosConProgreso();
   }

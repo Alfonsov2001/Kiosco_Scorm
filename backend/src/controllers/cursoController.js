@@ -207,14 +207,51 @@ exports.loginUsuario = async (req, res) => {
     if (!email) return res.status(400).json({ mensaje: 'Email requerido' });
 
     try {
-        let usuario = await Usuario.findByEmail(email);
+        const usuario = await Usuario.findByEmail(email);
 
         if (!usuario) {
-            usuario = await Usuario.create({ email });
+            // COMPORTAMIENTO NUEVO: Si no existe, error 404 (antes lo creaba)
+            return res.status(404).json({ mensaje: 'Usuario no encontrado. Por favor, regístrate.' });
         }
 
         res.json(usuario);
     } catch (error) {
         res.status(500).json({ mensaje: 'Error en login', error });
+    }
+};
+
+exports.registrarUsuario = async (req, res) => {
+    const { email, rol, codigoDocente } = req.body;
+
+    if (!email) return res.status(400).json({ mensaje: 'Email requerido' });
+
+    try {
+        // 1. Verificar si ya existe
+        const existente = await Usuario.findByEmail(email);
+        if (existente) {
+            return res.status(400).json({ mensaje: 'El usuario ya existe. Por favor, inicia sesión.' });
+        }
+
+        // 2. Validación de rol Profesor
+        let rolFinal = 'alumno';
+        if (rol === 'profesor') {
+            // CLAVE SECRETA HARDCODEADA (Puede moverse a .env)
+            const CLAVE_PROFESOR = 'profesor';
+
+            if (codigoDocente !== CLAVE_PROFESOR) {
+                return res.status(403).json({ mensaje: 'Código de docente incorrecto.' });
+            }
+            rolFinal = 'profesor';
+        }
+
+        // 3. Crear usuario
+        const nuevoUsuario = await Usuario.create({ email, rol: rolFinal });
+
+        console.log(`✅ Nuevo usuario registrado: ${email} (${rolFinal})`);
+        res.json(nuevoUsuario);
+
+    } catch (error) {
+        console.error('Error en registro:', error);
+        res.status(500).json({ mensaje: 'Error al registrar usuario', error });
     }
 };

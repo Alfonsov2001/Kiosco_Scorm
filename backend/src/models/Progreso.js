@@ -45,7 +45,8 @@ class Progreso {
     static async getRecientes(usuarioId) {
         try {
             const query = `
-                SELECT p.*, c.titulo, c.descripcion, c.ruta_carpeta, c.punto_entrada, c.fecha_subida
+                SELECT c.id, c.titulo, c.descripcion, c.ruta_carpeta, c.punto_entrada, c.fecha_subida,
+                       p.cmi_lesson_status, p.fecha_actualizacion, p.id as progreso_id
                 FROM progreso p
                 JOIN cursos c ON p.curso_id = c.id
                 WHERE p.usuario_id = ?

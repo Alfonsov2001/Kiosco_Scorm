@@ -52,5 +52,11 @@
     </button>
   </div>
 
-  <p *ngIf="mensaje" [class.error]="esError" class="status-msg">{{ mensaje }}</p>
+  <div *ngIf="mensaje && esError" class="alert alert-danger py-2 mb-3 small" role="alert">
+    {{ mensaje }}
+  </div>
+
+  <div *ngIf="mensaje && !esError" class="alert alert-success py-2 mb-3 small" role="alert">
+    {{ mensaje }}
+  </div>
 </div>
