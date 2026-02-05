@@ -88,7 +88,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
       // puede encontrar la API en window.parent sin errores de seguridad.
       const urlFinal = `${ruta}/${this.curso.punto_entrada}`;
 
-      console.log('🔗 Cargando curso desde:', urlFinal);
+      console.log('🔗 INFORMACIÓN DEL CURSO:');
+      console.log('  ID:', this.curso.id);
+      console.log('  Título:', this.curso.titulo);
+      console.log('  Ruta carpeta:', this.curso.ruta_carpeta);
+      console.log('  Punto entrada:', this.curso.punto_entrada);
+      console.log('  URL Final del iframe:', urlFinal);
+      console.log('  Archivos presentes:', this.curso.archivos_presentes);
 
       // "Sanitizar" la URL para que Angular confíe en ella
       this.urlSegura = this.sanitizer.bypassSecurityTrustResourceUrl(urlFinal);
@@ -106,6 +112,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Al salir, guardar todo y desuscribirse para no dejar basura en memoria
     if (this.progresoSub) this.progresoSub.unsubscribe();
+    this.scormService.detenerGuardadoAutomatico();
     this.scormService.forceCommit();
   }
 
@@ -113,9 +120,28 @@ export class PlayerComponent implements OnInit, OnDestroy {
     // Guardar antes de salir
     this.scormService.forceCommit();
 
+    // Notificar que los cursos han sido actualizados
+    this.dataService.notificarActualizacionCursos();
+
     // Redirigir según si es profe o alumno
     const usuario = this.dataService.usuarioActual;
     const ruta = (usuario?.rol === 'profesor') ? '/dashboard-profesor' : '/dashboard';
-    this.router.navigate([ruta]);
+    
+    // Forzar la recarga de datos cuando vuelva
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([ruta]);
+    });
+  }
+
+  // 🆕 Callback cuando el iframe carga
+  onIframeLoad(): void {
+    console.log('✅ iframe cargado correctamente');
+    console.log('📌 El SCORM debería estar inicializándose ahora...');
+    
+    // Pequeña pausa para asegurar que el contenido del iframe está listo
+    setTimeout(() => {
+      console.log('🔍 Verificando si la API SCORM está accesible desde el iframe...');
+      // El SCORM debería llamar a LMSInitialize automáticamente al cargar
+    }, 500);
   }
 }

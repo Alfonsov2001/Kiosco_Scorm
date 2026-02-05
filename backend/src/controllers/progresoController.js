@@ -8,10 +8,12 @@ exports.guardarProgreso = async (req, res) => {
     }
 
     try {
+        console.log(`💾 Guardando progreso - Usuario: ${usuarioId}, Curso: ${cursoId}, Status: ${cmi?.cmi_lesson_status}, Score: ${cmi?.cmi_score_raw}`);
         await Progreso.upsert(usuarioId, cursoId, cmi);
+        console.log(`✅ Progreso guardado exitosamente`);
         res.json({ mensaje: 'Progreso guardado' });
     } catch (error) {
-        console.error(error);
+        console.error('❌ Error guardando progreso:', error);
         res.status(500).json({ mensaje: 'Error guardando progreso' });
     }
 };

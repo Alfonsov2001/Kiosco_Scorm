@@ -55,6 +55,14 @@ export class DashboardComponent implements OnInit {
 
     this.cargarCategorias();
     this.cargarCursosConProgreso();
+
+    // 🆕 Suscribirse a cambios de cursos para recargar automáticamente
+    this.dataService.cursosActualizados$.subscribe((actualizado) => {
+      if (actualizado) {
+        console.log('📢 Cursos actualizados, recargando...');
+        this.cargarCursosConProgreso();
+      }
+    });
   }
 
   // ==================== CARGA DE DATOS ====================

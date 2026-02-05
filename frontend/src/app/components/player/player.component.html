@@ -18,12 +18,6 @@
     <div class="course-status-bar" *ngIf="!cargando">
       <div class="course-info">
         <h2 class="course-title">{{ curso?.titulo || 'Cargando título...' }}</h2>
-        <div class="progress-area">
-          <span class="progress-text">Avance: {{ progresoActual | number:'1.0-0' }}%</span>
-          <div class="progress-track">
-            <div class="progress-fill" [style.width.%]="progresoActual"></div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -33,7 +27,13 @@
     </div>
 
     <div class="iframe-container" *ngIf="urlSegura && !cargando">
-      <iframe [src]="urlSegura" class="scorm-iframe" frameborder="0" allowfullscreen>
+      <iframe 
+        #scormFrame
+        [src]="urlSegura" 
+        class="scorm-iframe" 
+        frameborder="0" 
+        allowfullscreen
+        (load)="onIframeLoad()">
       </iframe>
     </div>
   </main>

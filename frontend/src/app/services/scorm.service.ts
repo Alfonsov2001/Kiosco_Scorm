@@ -14,10 +14,9 @@ export class ScormService {
   // 🔥 Observable para enviar el progreso en tiempo real al Player
   public progresoRealtime = new BehaviorSubject<number>(0);
 
-  // 🆕 Variables para tracking de progreso gradual multi-fuente
-  private paginasVisitadas: Set<string> = new Set();
+  // Simplificado: solo 3 hitos - 0%, 50%, 100%
+  private progresoGuardado: number = 0; // Ultimo progreso guardado
   private progressMeasure: number = 0; // SCORM 2004 cmi.progress_measure (0-1)
-  private interactionCount: number = 0; // Contador de interacciones
   private sessionStartTime: number = 0;
 
   // Cache de datos CMI
@@ -27,6 +26,9 @@ export class ScormService {
     cmi_location: '',
     cmi_suspend_data: ''
   };
+
+  // Intervalo para guardado automático
+  private autoSaveInterval: any = null;
 
   constructor(private dataService: DataService) { }
 
@@ -38,10 +40,11 @@ export class ScormService {
     this.initialized = false;
     
     // Reiniciar tracking al abrir un curso nuevo
-    this.paginasVisitadas.clear();
     this.progressMeasure = 0;
-    this.interactionCount = 0;
+    this.progresoGuardado = 0;
     this.progresoRealtime.next(0);
+
+    console.log(`🚀 Inicializando API SCORM para usuario ${usuarioId}, curso ${cursoId}`);
 
     // Crear el objeto API SCORM 1.2
     const apiObject = {
@@ -70,32 +73,94 @@ export class ScormService {
     // Exponer en TODOS los lugares posibles donde SCORM puede buscar
     const win = window as any;
     
-    // SCORM 1.2
+    // SCORM 1.2 - Múltiples ubicaciones
     win.API = apiObject;
     win.api = apiObject;
     
     // SCORM 2004
     win.API_1484_11 = api2004Object;
     
-    // También en el parent
+    // También en el parent (muy importante para iframes)
     if (win.parent && win.parent !== win) {
+      console.log('📢 Exponiendo API a window.parent');
       win.parent.API = apiObject;
       win.parent.api = apiObject;
       win.parent.API_1484_11 = api2004Object;
     }
 
-    // Y en top
+    // Y en top (también importante)
     if (win.top && win.top !== win) {
       try {
+        console.log('📢 Exponiendo API a window.top');
         win.top.API = apiObject;
         win.top.api = apiObject;
         win.top.API_1484_11 = api2004Object;
       } catch (e) {
-        // Ignorar error cross-origin
+        console.warn('⚠️ No se puede acceder a window.top (posible error de cross-origin):', e);
       }
     }
 
-    console.log('✅ SCORM API inicializado para curso:', cursoId, 'usuario:', usuarioId);
+    // 🆕 También exponer globalmente como propiedades accesibles
+    (window as any).scormAPI = apiObject;
+    (window as any).scormAPI2004 = api2004Object;
+
+    console.log('✅ SCORM API inicializado en múltiples ubicaciones');
+    console.log('   - window.API ✅');
+    console.log('   - window.api ✅');
+    console.log('   - window.API_1484_11 ✅');
+    if (win.parent && win.parent !== win) console.log('   - window.parent.API ✅');
+    if (win.top && win.top !== win) console.log('   - window.top.API ✅');
+    
+    // 🆕 Iniciar guardado automático cada 10 segundos
+    this.iniciarGuardadoAutomatico();
+  }
+
+  // 🆕 Método de diagnóstico
+  private diagnosticarSCORM(): void {
+    const win = window as any;
+    const tieneAPI_12 = !!(win.API || win.api);
+    const tieneAPI_2004 = !!win.API_1484_11;
+    const tieneParentAPI = !!(win.parent?.API || win.parent?.api || win.parent?.API_1484_11);
+    
+    console.log(`
+╔════════════════════════════════════════════╗
+║         DIAGNÓSTICO DE SCORM                ║
+╚════════════════════════════════════════════╝
+Versión detectada: ${tieneAPI_2004 ? 'SCORM 2004' : tieneAPI_12 ? 'SCORM 1.2' : 'NO DETECTADO'}
+API 1.2 disponible: ${tieneAPI_12}
+API 2004 disponible: ${tieneAPI_2004}
+Parent API disponible: ${tieneParentAPI}
+Variables soportadas:
+  - cmi.progress_measure: ${tieneAPI_2004 ? '✅ Sí (SCORM 2004)' : '❌ No (Solo SCORM 1.2)'}
+  - cmi.core.score.raw: ✅ Sí (SCORM 1.2)
+  - cmi.core.lesson_status: ✅ Sí (SCORM 1.2)
+
+Próximos pasos:
+1. Abre el navegador (F12)
+2. Ve a la consola
+3. Busca mensajes que digan "PROGRESS_MEASURE" o "SCORE.RAW"
+4. Si ves "PROGRESS_MEASURE RECIBIDO", el curso está reportando progreso
+5. Si no ves nada, el curso no está reportando progreso granular
+    `);
+  }
+
+  // Guardado automatico (simplificado)
+  private iniciarGuardadoAutomatico(): void {
+    // Detener intervalo anterior si existe
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval);
+    }
+    
+    // Solo guardar al detectar cambios (via LMSSetValue)
+    // Ya no necesitamos guardado periodico con la logica de 3 hitos
+  }
+
+  // Detener guardado automatico
+  detenerGuardadoAutomatico(): void {
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval);
+      this.autoSaveInterval = null;
+    }
   }
 
   // Cargar estado inicial desde BD
@@ -130,31 +195,25 @@ export class ScormService {
     }
   }
 
-  // 🆕 Restaurar progreso guardado anteriormente
+  // Restaurar progreso guardado anteriormente
   private restaurarProgresoGuardado(): void {
     try {
       if (this.cmiData.cmi_suspend_data) {
         const suspendData = this.parseSuspendData(this.cmiData.cmi_suspend_data);
-        
-        // Restaurar páginas visitadas
-        if (suspendData._tracking?.paginas && Array.isArray(suspendData._tracking.paginas)) {
-          suspendData._tracking.paginas.forEach((p: string) => this.paginasVisitadas.add(p));
-        }
         
         // Restaurar progress_measure
         if (suspendData._tracking?.progressMeasure) {
           this.progressMeasure = suspendData._tracking.progressMeasure;
         }
         
-        // Restaurar contador de interacciones
-        if (suspendData._tracking?.interactionCount) {
-          this.interactionCount = suspendData._tracking.interactionCount;
+        // Restaurar ultimo progreso guardado
+        if (suspendData._tracking?.progresoGuardado) {
+          this.progresoGuardado = suspendData._tracking.progresoGuardado;
         }
         
-        console.log('📊 Tracking restaurado:', {
-          paginas: this.paginasVisitadas.size,
+        console.log('Tracking restaurado:', {
           progressMeasure: this.progressMeasure,
-          interacciones: this.interactionCount
+          progresoGuardado: this.progresoGuardado
         });
       }
     } catch (e) {
@@ -173,16 +232,15 @@ export class ScormService {
     }
   }
 
-  // 🆕 Guardar tracking en suspend_data sin perder datos originales del SCORM
+  // Guardar tracking en suspend_data sin perder datos originales del SCORM
   private guardarTrackingEnSuspendData(): void {
     try {
       let suspendObj = this.parseSuspendData(this.cmiData.cmi_suspend_data);
       
       // Agregar o actualizar nuestro tracking
       suspendObj._tracking = {
-        paginas: Array.from(this.paginasVisitadas),
         progressMeasure: this.progressMeasure,
-        interactionCount: this.interactionCount,
+        progresoGuardado: this.progresoGuardado,
         ultimaActualizacion: new Date().toISOString()
       };
       
@@ -192,80 +250,72 @@ export class ScormService {
     }
   }
 
-  // 🔥 NUEVA lógica multi-fuente para calcular porcentaje
+  // Logica simplificada: solo 0%, 50%, 100%
   private calcularProgresoMultiFuente(): void {
     let porcentaje = 0;
     const status = this.cmiData.cmi_lesson_status;
     const rawScore = parseFloat(this.cmiData.cmi_score_raw);
     
-    // ===== PRIORIDAD 1: Estado completado = 100% =====
+    // COMPLETADO = 100%
     if (status === 'completed' || status === 'passed') {
       porcentaje = 100;
     }
-    // ===== PRIORIDAD 2: SCORM 2004 progress_measure (0-1) =====
-    else if (this.progressMeasure > 0) {
-      porcentaje = Math.round(this.progressMeasure * 100);
+    // EN PROGRESO = 50%
+    else if (status === 'incomplete' || this.progressMeasure > 0 || rawScore > 0) {
+      porcentaje = 50;
     }
-    // ===== PRIORIDAD 3: Score raw si está entre 0-100 =====
-    else if (!isNaN(rawScore) && rawScore > 0 && rawScore <= 100) {
-      porcentaje = Math.round(rawScore);
+    // NO INICIADO = 0%
+    else {
+      porcentaje = 0;
     }
-    // ===== PRIORIDAD 4: Páginas visitadas (lesson_location) =====
-    else if (this.paginasVisitadas.size > 0) {
-      // Estimamos: cada página nueva = incremento proporcional
-      // Máximo estimado de páginas: 20 (ajustable)
-      const maxPaginasEstimado = 20;
-      porcentaje = Math.min(Math.round((this.paginasVisitadas.size / maxPaginasEstimado) * 100), 95);
-    }
-    // ===== PRIORIDAD 5: Interacciones realizadas =====
-    else if (this.interactionCount > 0) {
-      // Cada interacción = 5% hasta máximo 90%
-      porcentaje = Math.min(this.interactionCount * 5, 90);
-    }
-    // ===== PRIORIDAD 6: Tiempo de sesión =====
-    else if (this.sessionStartTime > 0) {
-      const minutos = (Date.now() - this.sessionStartTime) / 60000;
-      // Cada minuto = 2% hasta máximo 30%
-      if (minutos >= 0.5) {
-        porcentaje = Math.min(Math.round(minutos * 2), 30);
-      }
-    }
-    // ===== PRIORIDAD 7: Estados SCORM básicos (fallback) =====
-    else if (status === 'incomplete' || status === 'browsed') {
-      porcentaje = status === 'incomplete' ? 10 : 5;
-    }
-
-    // Limitar a 0-100
-    porcentaje = Math.max(0, Math.min(100, porcentaje));
     
-    console.log(`📊 Progreso calculado: ${porcentaje}% (fuentes: status=${status}, score=${rawScore}, páginas=${this.paginasVisitadas.size}, interacciones=${this.interactionCount})`);
+    console.log('Progreso calculado: ' + porcentaje + '% (status=' + status + ')');
     
-    // Emitir el valor para que el Player lo vea y actualice la barra
     this.progresoRealtime.next(porcentaje);
+  }
+
+  // Determinar si debemos guardar este progreso (solo en hitos: 0%, 50%, 100%)
+  private debeGuardarProgreso(): boolean {
+    const progresoActual = this.progresoRealtime.getValue();
     
-    // Guardar el porcentaje en cmi_score_raw para persistirlo
-    if (porcentaje > (this.cmiData.cmi_score_raw || 0)) {
-      this.cmiData.cmi_score_raw = porcentaje;
+    // Siempre guardar el primer cambio (0%)
+    if (this.progresoGuardado === 0 && (progresoActual === 0 || progresoActual === 50)) {
+      return true;
     }
     
-    // Guardar tracking
-    this.guardarTrackingEnSuspendData();
+    // Guardar transicion 0 -> 50 o 50 -> 100
+    if (progresoActual > this.progresoGuardado) {
+      this.progresoGuardado = progresoActual;
+      return true;
+    }
+    
+    // No guardar si no hay cambio significativo
+    return false;
   }
 
   // --- MÉTODOS SCORM 1.2 ---
 
   private LMSInitialize(param: string): string {
-    console.log('🚀 SCORM: LMSInitialize');
+    console.log('🚀 SCORM: LMSInitialize LLAMADO');
+    console.log('   Parámetro:', param);
+    console.log('   Usuario:', this.usuarioId);
+    console.log('   Curso:', this.cursoId);
     
     if (!this.initialized) {
       this.initialized = true;
       this.startTime = Date.now();
       this.sessionStartTime = Date.now();
       
+      console.log('✅ SCORM inicializado correctamente');
+      
       if (this.cmiData.cmi_lesson_status === 'not attempted') {
         this.cmiData.cmi_lesson_status = 'incomplete';
+        // 🆕 Guardar inmediatamente cuando se inicia
+        this.calcularProgresoMultiFuente();
         this.guardarEnBD();
       }
+    } else {
+      console.log('⚠️ LMSInitialize ya fue llamado anteriormente');
     }
     return "true";
   }
@@ -313,28 +363,27 @@ export class ScormService {
   }
 
   private LMSSetValue(element: string, value: string): string {
-    console.log(`📝 SCORM Set: ${element} = ${value}`);
-    
-    // 🆕 Incrementar contador de interacciones
-    this.interactionCount++;
+    console.log('SCORM 1.2 Set: ' + element + ' = ' + value);
 
     switch (element) {
       case 'cmi.core.lesson_status':
+        console.log(`📌 LESSON_STATUS: ${value}`);
         this.cmiData.cmi_lesson_status = value;
+        this.guardarEnBD();
         break;
       case 'cmi.core.score.raw':
         const scoreValue = parseFloat(value) || 0;
+        console.log(`📊 SCORE.RAW: ${scoreValue}`);
         // Solo actualizar si es mayor que el actual (progreso nunca baja)
         if (scoreValue > (this.cmiData.cmi_score_raw || 0)) {
           this.cmiData.cmi_score_raw = scoreValue;
+          // 🆕 Guardar inmediatamente si el score cambió
+          this.guardarEnBD();
         }
         break;
       case 'cmi.core.lesson_location':
         this.cmiData.cmi_location = value;
-        // 🆕 Registrar página visitada
-        if (value && value.trim()) {
-          this.paginasVisitadas.add(value.trim());
-        }
+        console.log('Ubicacion: ' + value);
         break;
       case 'cmi.suspend_data':
         // 🆕 Preservar nuestro tracking al actualizar suspend_data
@@ -343,6 +392,7 @@ export class ScormService {
           const actualData = this.parseSuspendData(this.cmiData.cmi_suspend_data);
           nuevoData._tracking = actualData._tracking;
           this.cmiData.cmi_suspend_data = JSON.stringify(nuevoData);
+          console.log(`💾 SUSPEND_DATA actualizado`);
         } catch {
           this.cmiData.cmi_suspend_data = value;
         }
@@ -355,7 +405,6 @@ export class ScormService {
     return "true";
   }
 
-  // 🆕 Setter SCORM 2004
   private LMSSetValue2004(element: string, value: string): string {
     console.log(`📝 SCORM 2004 Set: ${element} = ${value}`);
     
@@ -364,27 +413,34 @@ export class ScormService {
       case 'cmi.progress_measure':
         const pm = parseFloat(value);
         if (!isNaN(pm) && pm >= 0 && pm <= 1) {
+          console.log(`🎯 PROGRESS_MEASURE RECIBIDO: ${pm} (${Math.round(pm * 100)}%)`);
           this.progressMeasure = pm;
           this.calcularProgresoMultiFuente();
+          // 🆕 Guardar inmediatamente al recibir progreso
+          this.guardarEnBD();
         }
         return "true";
         
       case 'cmi.completion_status':
+        console.log(`✅ COMPLETION_STATUS: ${value}`);
         if (value === 'completed') {
           this.cmiData.cmi_lesson_status = 'completed';
         } else if (value === 'incomplete') {
           this.cmiData.cmi_lesson_status = 'incomplete';
         }
         this.calcularProgresoMultiFuente();
+        this.guardarEnBD();
         return "true";
         
       case 'cmi.success_status':
+        console.log(`🏆 SUCCESS_STATUS: ${value}`);
         if (value === 'passed') {
           this.cmiData.cmi_lesson_status = 'passed';
         } else if (value === 'failed') {
           this.cmiData.cmi_lesson_status = 'failed';
         }
         this.calcularProgresoMultiFuente();
+        this.guardarEnBD();
         return "true";
     }
     
@@ -400,13 +456,31 @@ export class ScormService {
   }
 
   private guardarEnBD(): void {
-    // Asegurar que el tracking esté guardado
+    // Solo guardar si hay cambio significativo (0%, 50%, 100%)
+    if (!this.debeGuardarProgreso()) {
+      console.log('Progreso sin cambio significativo, no se guarda');
+      return;
+    }
+
+    // Asegurar que el tracking este guardado
     this.guardarTrackingEnSuspendData();
     
-    // Guardamos silenciosamente en backend
+    // Log detallado antes de guardar
+    const progresoActual = this.progresoRealtime.getValue();
+    console.log('Guardando progreso en BD:', {
+      usuario: this.usuarioId,
+      curso: this.cursoId,
+      status: this.cmiData.cmi_lesson_status,
+      porcentaje: progresoActual + '%',
+      timestamp: new Date().toISOString()
+    });
+    
+    // Guardamos en backend
     this.dataService.guardarProgreso(this.usuarioId, this.cursoId, this.cmiData).subscribe({
-      next: () => {}, // Éxito silencioso
-      error: (e) => console.error('❌ Error guardando progreso:', e)
+      next: () => {
+        console.log('Progreso ' + progresoActual + '% guardado exitosamente en BD');
+      },
+      error: (e) => console.error('Error guardando progreso:', e)
     });
   }
 

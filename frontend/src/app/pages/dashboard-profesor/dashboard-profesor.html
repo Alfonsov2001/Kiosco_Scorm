@@ -8,16 +8,16 @@
       <!-- PANEL DE ESTADÍSTICAS (Nuevo) -->
       <div class="stats-panel mb-4" *ngIf="estadisticas && !cursoSeleccionado">
         <div class="row g-3">
-          <div class="col-6 col-md-3">
+          <div class="col-12 col-md-4">
             <div class="stat-card">
               <div class="stat-icon"><i class="bi bi-book"></i></div>
               <div class="stat-info">
                 <span class="stat-number">{{ estadisticas.totalCursos }}</span>
-                <span class="stat-label">Cursos Gestionados</span>
+                <span class="stat-label">Gestión de Cursos</span>
               </div>
             </div>
           </div>
-          <div class="col-6 col-md-3">
+          <div class="col-12 col-md-4">
             <div class="stat-card stat-success">
               <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
               <div class="stat-info">
@@ -26,21 +26,12 @@
               </div>
             </div>
           </div>
-          <div class="col-6 col-md-3">
+          <div class="col-12 col-md-4">
             <div class="stat-card stat-progress">
               <div class="stat-icon"><i class="bi bi-play-circle-fill"></i></div>
               <div class="stat-info">
                 <span class="stat-number">{{ estadisticas.cursosEnProgreso }}</span>
                 <span class="stat-label">En Progreso</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-card stat-score">
-              <div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
-              <div class="stat-info">
-                <span class="stat-number">{{ estadisticas.promedioPuntuacion || '-' }}</span>
-                <span class="stat-label">Nota Media</span>
               </div>
             </div>
           </div>

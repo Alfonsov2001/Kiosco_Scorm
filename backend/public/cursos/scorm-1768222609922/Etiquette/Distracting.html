@@ -7,7 +7,91 @@
 	</style>
 	<script src="../shared/scormfunctions.js" type="text/javascript"></script>
 	<script src="../shared/contentfunctions.js" type="text/javascript"></script>
-</head>
+
+    <!-- 🆕 INYECCIÓN DE SCORM ADAPTER -->
+    <script type="text/javascript">
+      (function() {
+        console.log('🔧 INYECCIÓN SCORM: Buscando API SCORM...');
+        
+        // Función para encontrar y usar la API SCORM
+        function initScormAdapter() {
+          var scormAPI = null;
+          var isInitialized = false;
+          
+          // Buscar API SCORM 1.2
+          if (window.parent && window.parent.API) {
+            scormAPI = window.parent.API;
+            console.log('✅ API SCORM 1.2 encontrada en window.parent.API');
+          } else if (window.API) {
+            scormAPI = window.API;
+            console.log('✅ API SCORM 1.2 encontrada en window.API');
+          }
+          
+          // Buscar API SCORM 2004
+          if (!scormAPI && window.parent && window.parent.API_1484_11) {
+            scormAPI = window.parent.API_1484_11;
+            console.log('✅ API SCORM 2004 encontrada en window.parent.API_1484_11');
+          } else if (!scormAPI && window.API_1484_11) {
+            scormAPI = window.API_1484_11;
+            console.log('✅ API SCORM 2004 encontrada en window.API_1484_11');
+          }
+          
+          if (scormAPI) {
+            console.log('🚀 Inicializando SCORM...');
+            
+            // SCORM 1.2
+            if (scormAPI.LMSInitialize) {
+              scormAPI.LMSInitialize('');
+              isInitialized = true;
+              console.log('✅ LMSInitialize ejecutado');
+            }
+            
+            // SCORM 2004
+            if (!isInitialized && scormAPI.Initialize) {
+              scormAPI.Initialize('');
+              isInitialized = true;
+              console.log('✅ Initialize (SCORM 2004) ejecutado');
+            }
+            
+            if (isInitialized) {
+              console.log('🎉 SCORM inicializado exitosamente');
+              
+              // Reportar que el curso está en progreso
+              setTimeout(() => {
+                if (scormAPI.LMSSetValue) {
+                  scormAPI.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                  console.log('📊 Estado establecido a: incomplete');
+                }
+                if (scormAPI.SetValue) {
+                  scormAPI.SetValue('cmi.completion_status', 'incomplete');
+                  console.log('📊 Estado (2004) establecido a: incomplete');
+                }
+              }, 500);
+            }
+          } else {
+            console.warn('⚠️ No se encontró API SCORM disponible');
+          }
+        }
+        
+        // Intentar inicializar inmediatamente
+        initScormAdapter();
+        
+        // Reintentar cada 2 segundos por si la API está tardando en cargar
+        var retryCount = 0;
+        var retryInterval = setInterval(() => {
+          if (retryCount < 10 && !window._scormInitialized) {
+            initScormAdapter();
+            retryCount++;
+          } else {
+            clearInterval(retryInterval);
+          }
+        }, 2000);
+        
+        window._scormInitialized = true;
+      })();
+    </script>
+
+  </head>
 <body>
      <h1>Etiquette - Avoiding Distraction</h1>
 <img src="distracting.jpg" id="golfimg" alt="golfing image"/>
@@ -23,7 +107,7 @@
 
 <p>On the green a golfer should be aware of many things. One of them is the putting line of each player. Every ball is connected to the cup by an imaginary line, the path the ball will (hopefully) travel into the cup. Walking, standing, or stepping on these lines creates footprints that can deflect the ball off its path toward the cup. Golfers should note each player's putting line, and avoid stepping on it as they play on the green. The through-line is the extension of the line beyond the hole. It is also considered good form to avoid stepping on another player's through-line since if the player misses their putt they will have to putt back along that line. A golfer should walk around the lines or step over them.</p>
 
-<p>A second but related concern involves the hole itself. A golfer should avoid stepping within at least a one-foot radius of the hole. Golf instructor Dave Pelz, among others, has described a "doughnut effect" around the hole caused by players� footsteps pressing down the ground around the cup, especially when a player goes to retrieve a ball. While subtle, these footsteps interfere with the path of the ball and can cause missed putts.</p>
+<p>A second but related concern involves the hole itself. A golfer should avoid stepping within at least a one-foot radius of the hole. Golf instructor Dave Pelz, among others, has described a "doughnut effect" around the hole caused by players� footsteps pressing down the ground around the cup, especially when a player goes to retrieve a ball. While subtle, these footsteps interfere with the path of the ball and can cause missed putts.</p>
 
 <p>Thirdly, one should not stand on a line of sight, that is, in the line of sight either ahead or behind a player who is attempting to putt. Standing in this position puts you in the peripheral vision of your playing partner and for some this is very distracting. If you notice that you are standing in one of these positions you can discretely and quietly move to one side.</p>
 

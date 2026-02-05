@@ -75,6 +75,10 @@ export class DataService {
   // Observable público al que se suscribe el SidebarComponent
   public cursosVisitados$ = this.cursosVisitadosSubject.asObservable();
 
+  // 🆕 Notificación de que los cursos han sido actualizados
+  private cursosActualizadosSubject = new BehaviorSubject<boolean>(false);
+  public cursosActualizados$ = this.cursosActualizadosSubject.asObservable();
+
   /**
    * Registra una visita a un curso (cuando se hace clic en "Ver").
    * Mantiene un máximo de 4 cursos, el más reciente arriba.
@@ -343,43 +347,20 @@ export class DataService {
   }
 
   private calcularPorcentaje(status: string | undefined, scoreRaw?: number, suspendData?: string): number {
-    // 🆕 PRIORIDAD 1: Usar el score_raw que ahora contiene el progreso real calculado
-    if (scoreRaw !== undefined && scoreRaw > 0 && scoreRaw <= 100) {
-      return Math.round(scoreRaw);
+    // Logica simplificada: solo 0%, 50%, 100%
+
+    // COMPLETADO = 100%
+    if (status === 'completed' || status === 'passed') {
+      return 100;
     }
 
-    // 🆕 PRIORIDAD 2: Intentar extraer progreso desde suspend_data
-    if (suspendData) {
-      try {
-        const data = JSON.parse(suspendData);
-        if (data._tracking?.progressMeasure > 0) {
-          return Math.round(data._tracking.progressMeasure * 100);
-        }
-        if (data._tracking?.paginas && data._tracking.paginas.length > 0) {
-          // Estimado: máximo 20 páginas
-          return Math.min(Math.round((data._tracking.paginas.length / 20) * 100), 95);
-        }
-        if (data._tracking?.interactionCount > 0) {
-          return Math.min(data._tracking.interactionCount * 5, 90);
-        }
-      } catch (e) { /* fallback a lógica de status */ }
+    // EN PROGRESO = 50%
+    if (status === 'incomplete' || scoreRaw && scoreRaw > 0) {
+      return 50;
     }
 
-    // PRIORIDAD 3: Lógica basada en status (fallback)
-    if (!status) return 0;
-    const s = status.toLowerCase().trim();
-    switch (s) {
-      case 'completed':
-      case 'passed':
-      case 'failed':
-        return 100;
-      case 'incomplete':
-        return 10;
-      case 'browsed':
-        return 5;
-      default:
-        return 0;
-    }
+    // NO INICIADO = 0%
+    return 0;
   }
 
   // ==================== HELPERS PÚBLICOS ====================
@@ -425,5 +406,14 @@ export class DataService {
     if (porcentaje >= 50) return 'var(--color-interactivo-principal)';
     if (porcentaje > 0) return 'var(--color-alerta-advertencia)';
     return '#dee2e6';
+  }
+
+  // 🆕 Notificar al dashboard que debe recargar los cursos
+  notificarActualizacionCursos(): void {
+    this.cursosActualizadosSubject.next(true);
+    // Después de 100ms, volver a false para permitir futuros cambios
+    setTimeout(() => {
+      this.cursosActualizadosSubject.next(false);
+    }, 100);
   }
 }

@@ -23,9 +23,12 @@ class Progreso {
                 data.cmi_suspend_data || ''
             ];
 
+            console.log(`🔄 Ejecutando query UPSERT para usuario ${usuarioId}, curso ${cursoId}`);
             const [result] = await db.query(query, params);
+            console.log(`📊 Resultado de query:`, result);
             return result;
         } catch (error) {
+            console.error(`❌ Error en Progreso.upsert:`, error);
             throw error;
         }
     }

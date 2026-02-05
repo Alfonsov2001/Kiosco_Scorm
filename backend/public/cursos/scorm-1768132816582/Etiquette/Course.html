@@ -7,7 +7,91 @@
 	</style>
 	<script src="../shared/scormfunctions.js" type="text/javascript"></script>
 	<script src="../shared/contentfunctions.js" type="text/javascript"></script>
-</head>
+
+    <!-- 🆕 INYECCIÓN DE SCORM ADAPTER -->
+    <script type="text/javascript">
+      (function() {
+        console.log('🔧 INYECCIÓN SCORM: Buscando API SCORM...');
+        
+        // Función para encontrar y usar la API SCORM
+        function initScormAdapter() {
+          var scormAPI = null;
+          var isInitialized = false;
+          
+          // Buscar API SCORM 1.2
+          if (window.parent && window.parent.API) {
+            scormAPI = window.parent.API;
+            console.log('✅ API SCORM 1.2 encontrada en window.parent.API');
+          } else if (window.API) {
+            scormAPI = window.API;
+            console.log('✅ API SCORM 1.2 encontrada en window.API');
+          }
+          
+          // Buscar API SCORM 2004
+          if (!scormAPI && window.parent && window.parent.API_1484_11) {
+            scormAPI = window.parent.API_1484_11;
+            console.log('✅ API SCORM 2004 encontrada en window.parent.API_1484_11');
+          } else if (!scormAPI && window.API_1484_11) {
+            scormAPI = window.API_1484_11;
+            console.log('✅ API SCORM 2004 encontrada en window.API_1484_11');
+          }
+          
+          if (scormAPI) {
+            console.log('🚀 Inicializando SCORM...');
+            
+            // SCORM 1.2
+            if (scormAPI.LMSInitialize) {
+              scormAPI.LMSInitialize('');
+              isInitialized = true;
+              console.log('✅ LMSInitialize ejecutado');
+            }
+            
+            // SCORM 2004
+            if (!isInitialized && scormAPI.Initialize) {
+              scormAPI.Initialize('');
+              isInitialized = true;
+              console.log('✅ Initialize (SCORM 2004) ejecutado');
+            }
+            
+            if (isInitialized) {
+              console.log('🎉 SCORM inicializado exitosamente');
+              
+              // Reportar que el curso está en progreso
+              setTimeout(() => {
+                if (scormAPI.LMSSetValue) {
+                  scormAPI.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                  console.log('📊 Estado establecido a: incomplete');
+                }
+                if (scormAPI.SetValue) {
+                  scormAPI.SetValue('cmi.completion_status', 'incomplete');
+                  console.log('📊 Estado (2004) establecido a: incomplete');
+                }
+              }, 500);
+            }
+          } else {
+            console.warn('⚠️ No se encontró API SCORM disponible');
+          }
+        }
+        
+        // Intentar inicializar inmediatamente
+        initScormAdapter();
+        
+        // Reintentar cada 2 segundos por si la API está tardando en cargar
+        var retryCount = 0;
+        var retryInterval = setInterval(() => {
+          if (retryCount < 10 && !window._scormInitialized) {
+            initScormAdapter();
+            retryCount++;
+          } else {
+            clearInterval(retryInterval);
+          }
+        }, 2000);
+        
+        window._scormInitialized = true;
+      })();
+    </script>
+
+  </head>
 <body>
    <h1>Etiquette - Care For the Course</h1> 
     <img src="course.jpg" id="golfimg" alt="golfing image"/>

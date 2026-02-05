@@ -33,13 +33,15 @@ export class HeaderComponent implements OnInit {
   }
 
   cerrarSesion() {
-    console.log(' Cerrando sesión...');
+    console.log('Cerrando sesión...');
     
     // 1. Limpiar datos del servicio
     this.dataService.usuarioActual = null;
+    this.dataService.cursoActual = null;
     
     // 2. Borrar del almacenamiento local
     localStorage.removeItem('usuarioActual');
+    localStorage.removeItem('ultimosVisitados');
     
     // 3. Redirigir al login
     this.router.navigate(['/login']);

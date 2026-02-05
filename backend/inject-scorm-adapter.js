@@ -1,7 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <!-- 🆕 INYECCIÓN DE SCORM ADAPTER -->
+#!/usr/bin/env node
+
+/**
+ * Script para inyectar el adaptador SCORM en todos los archivos index.html
+ * Este script busca todos los archivos HTML en subdirectorios de cursos/ 
+ * y añade el código de inicialización SCORM si no lo tiene
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const SCORM_ADAPTER = `    <!-- 🆕 INYECCIÓN DE SCORM ADAPTER -->
     <script type="text/javascript">
       (function() {
         console.log('🔧 INYECCIÓN SCORM: Buscando API SCORM...');
@@ -83,98 +91,73 @@
         window._scormInitialized = true;
       })();
     </script>
+`;
 
+const cursosDir = path.join(__dirname, 'public', 'cursos');
 
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=9">
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
-	<title></title>
+console.log('📁 Buscando archivos HTML en:', cursosDir);
 
-	<link type="text/css" href="css/cyu.css" rel="stylesheet"/>
-	<!--<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.0.custom.css">-->
-	<link rel="stylesheet" href="css/cyu_in.css">
-	
-	<script language="javascript" src="js/lib/jquery-1.5.js"></script>
-	
-	<script language="javascript" src="js/cyu.js"></script>	
+// Listar todas las carpetas de cursos
+fs.readdirSync(cursosDir, { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .forEach(dirent => {
+    const cursoDir = path.join(cursosDir, dirent.name);
+    
+    // Buscar archivos HTML en la carpeta
+    searchAndInject(cursoDir);
+  });
 
-	<style>
-	.clk-inst {
-		bottom: 65px;
-	}
-	
-	@media screen and (max-width: 768px) {
+function searchAndInject(dir, depth = 0) {
+  if (depth > 5) return; // Evitar profundidad infinita
+  
+  try {
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    
+    files.forEach(file => {
+      const filePath = path.join(dir, file.name);
+      
+      if (file.isDirectory()) {
+        searchAndInject(filePath, depth + 1);
+      } else if (file.name.endsWith('.html')) {
+        injectScormAdapter(filePath);
+      }
+    });
+  } catch (e) {
+    console.error('❌ Error leyendo directorio:', dir, e.message);
+  }
+}
 
-      	.clk-inst {	bottom: 20px; }
-	}
-	</style>
-<body style="background: #E8EFF5; ">
+function injectScormAdapter(filePath) {
+  try {
+    let content = fs.readFileSync(filePath, 'utf-8');
+    
+    // Verificar si ya tiene la inyección
+    if (content.includes('INYECCIÓN DE SCORM ADAPTER')) {
+      console.log('⏭️  Ya tiene inyección:', filePath);
+      return;
+    }
+    
+    // Encontrar donde inyectar (después del </head> o en el <head>)
+    const headEnd = content.indexOf('</head>');
+    const headStart = content.indexOf('<head');
+    
+    if (headEnd !== -1) {
+      // Inyectar justo antes de </head>
+      const newContent = content.slice(0, headEnd) + '\n' + SCORM_ADAPTER + '\n  ' + content.slice(headEnd);
+      fs.writeFileSync(filePath, newContent, 'utf-8');
+      console.log('✅ Inyectado en:', filePath);
+    } else if (headStart !== -1) {
+      // Si no hay </head>, inyectar después de <head>
+      const headEndTag = content.indexOf('>', headStart);
+      const newContent = content.slice(0, headEndTag + 1) + '\n' + SCORM_ADAPTER + '\n' + content.slice(headEndTag + 1);
+      fs.writeFileSync(filePath, newContent, 'utf-8');
+      console.log('✅ Inyectado en:', filePath);
+    } else {
+      console.warn('⚠️ No se encontró <head> en:', filePath);
+    }
+  } catch (e) {
+    console.error('❌ Error procesando archivo:', filePath, e.message);
+  }
+}
 
-<div align="center">
-
-    <div id="int_dis"></div>
-	<div class="main_layout  intractivity">
-	 
-	   <div id="knowledge_check">Check Your Understanding</div>
-		<div class="page_title" id="pagetitle"></div>
-		<div id="question_bg"></div>
-		<!--<div class="instruction_txt"></div>-->
-		<div id="content">
-			<div class="content_region">
-			<!--------Partition starts here-------->
-				<div class="single_row">
-					<div class="single_column">
-						<div class="content_inner_region">
-							<div class="content_inner">
-							    
-								<div id="questionBox">
-									<!--<div id="heading"></div>										
-									<div id="QuestionText"></div>-->
-									<div id="Options"></div>
-								</div>	
-								<div id="screen_feedback" class="cyu_instruction">	
-									
-									
-								</div>					
-								<div id="buttons" class="cyu_buttons">	
-									<div id="but-submit" class='inactive'>Submit</div>
-									<div id="but-next" class='active'></div>
-								</div>
-								
-								
-								
-							</div>
-						</div>
-					</div>
-				</div>
-				
-				
-				
-			</div>		
-		</div>
-		<!--Feedback-->
-		<div id="feedbox">
-		    <div id="feed_head"><div id="feed-title">Title here</div><div id="feed-close"></div></div>
-			<div id="feedbox_inner">
-				
-				<p id="message" >Feed back comes here </p>
-				
-			</div>
-			
-		</div>
-		
-		
-		
-	</div>
-	<div style="visibility:hidden;">
-	<img src="images/checkbox-selected.png" />
-	<img src="images/checkbox-unselected.png" />
-	<img src="images/radio-selected.png" />
-	<img src="images/radio-unselected.png" />
-	<img src="images/submit.png" />
-	<img src="images/feedback_head.png" />
-	<img src="images/hint_close.png" />
-	</div>
-</div>
-</body>
-</html>
+console.log('✅ Proceso completado');

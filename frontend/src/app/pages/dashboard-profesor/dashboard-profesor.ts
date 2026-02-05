@@ -53,6 +53,14 @@ export class DashboardProfesor implements OnInit {
 
     this.recargar();
     this.cargarCategorias();
+
+    // 🆕 Suscribirse a cambios de cursos para recargar automáticamente
+    this.dataService.cursosActualizados$.subscribe((actualizado) => {
+      if (actualizado) {
+        console.log('📢 Cursos actualizados, recargando...');
+        this.recargar();
+      }
+    });
   }
 
   cargarCategorias() {
