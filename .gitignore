@@ -36,6 +36,10 @@ coverage/
 # =========================
 *.log
 
+# Debug files
+*.debug.txt
+diagnostic_*.json
+
 # =========================
 # SCORM uploads / generated content (NO subir a Git)
 # =========================
@@ -61,3 +65,4 @@ backend/public/uploads/**
 # =========================
 tmp/
 temp/
+backend/scripts/archive/
