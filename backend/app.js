@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1. CORS GLOBAL - Permitir peticiones desde Angular
+// CORS setup - sin esto Angular no puede hablar con el backend
 app.use(cors({
     origin: ['http://localhost:4200', 'http://127.0.0.1:4200'],
     credentials: true,
@@ -14,33 +14,30 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
-// 2. MIDDLEWARE DE SEGURIDAD PARA IFRAMES (SCORM)
-// Esto es vital para que el navegador no bloquee el SCORM dentro del iframe
+// CRÍTICO: Headers para que los SCORMs funcionen en iframes
+// Sin esto, el navegador bloquea el contenido del iframe y la API SCORM no se conecta
 app.use((req, res, next) => {
-    res.setHeader('X-Frame-Options', 'ALLOWALL'); // Permite que se vea en iframe
-    res.removeHeader('X-Frame-Options'); // Elimina bloqueos antiguos
-    // CSP: Permite que localhost incruste el contenido
+    res.setHeader('X-Frame-Options', 'ALLOWALL');
+    res.removeHeader('X-Frame-Options'); // Limpiar cualquier header previo
+    // CSP modificado para permitir embeds desde localhost:4200
     res.setHeader('Content-Security-Policy', "frame-ancestors 'self' http://localhost:4200 http://127.0.0.1:4200");
     next();
 });
 
-// Parsear JSON y formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================================
-// 3. AQUÍ ESTÁ LA SOLUCIÓN (SERVIR UPLOADS)
-// ==========================================
-// Hacemos pública la carpeta 'uploads' donde se guardan los ZIPs descomprimidos
+// Servir archivos subidos (imágenes de cursos)
+// NOTA: Los SCORM descomprimidos van a public/cursos, no aquí
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     setHeaders: (res, filePath) => {
-        // Forzamos cabeceras permisivas también en los archivos estáticos
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('X-Frame-Options', 'ALLOWALL');
     }
 }));
 
-// Servir archivos estáticos (por si acaso usas public/cursos)
+// Carpeta principal de cursos SCORM descomprimidos
+// Angular usa el proxy para acceder a /cursos
 app.use('/cursos', express.static(path.join(__dirname, 'public/cursos'), {
     setHeaders: (res, filePath) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,33 +45,31 @@ app.use('/cursos', express.static(path.join(__dirname, 'public/cursos'), {
     }
 }));
 
-// Servir carpeta public general
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta de prueba
+// Endpoint de prueba para verificar que el servidor está vivo
 app.get('/test', (req, res) => {
     res.json({ status: 'OK', message: 'Backend funcionando y sirviendo archivos estáticos' });
 });
 
-// Importar rutas
+// Rutas de la API
 const cursoRoutes = require('./src/routes/cursoRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const progresoRoutes = require('./src/routes/progresoRoutes');
 const categoriaRoutes = require('./src/routes/categoriaRoutes');
 
-// Usar rutas de API
 app.use('/api/cursos', cursoRoutes);
-app.use('/api', authRoutes);
+app.use('/api', authRoutes);  // Login y registro van directo a /api/login y /api/register
 app.use('/api/progreso', progresoRoutes);
 app.use('/api/categorias', categoriaRoutes);
 
-// Manejo de errores
+// Error handler genérico
 app.use((err, req, res, next) => {
     console.error('Error del servidor:', err);
     res.status(500).json({ mensaje: 'Error interno del servidor', error: err.message });
 });
 
-// Iniciar servidor
+// Arrancar el servidor
 app.listen(PORT, () => {
     console.log('========================================');
     console.log(`🚀 SERVIDOR CORRIENDO EN PUERTO ${PORT}`);

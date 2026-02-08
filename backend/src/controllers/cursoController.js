@@ -24,20 +24,20 @@ exports.subirCurso = async (req, res) => {
 
         const zipPath = zipFile.path;
         const nombreCarpeta = 'scorm-' + Date.now();
-        // Ajustamos la ruta para que coincida con donde backend/app.js sirve los estáticos
         const rutaDescompresion = path.join(__dirname, '../../public/cursos', nombreCarpeta);
 
-        // 1. Descomprimir el ZIP
+        // Descomprimir el ZIP principal
         console.log('📦 1. Descomprimiendo archivo principal en:', rutaDescompresion);
         const zip = new AdmZip(zipPath);
         zip.extractAllTo(rutaDescompresion, true);
         console.log('✅ Descompresión completada.');
 
-        // 2. Buscando paquetes internos
+        // Algunos SCORMs vienen con ZIPs anidados (típico de Articulate Rise)
         console.log('🔍 2. Buscando paquetes internos...');
         extractInternalZips(rutaDescompresion);
 
-        // 3. ESTRATEGIA MIXTA: PRIMERO SCORM MANIFEST, LUEGO BRUTE FORCE
+        // ESTRATEGIA: Primero intentar leer el manifest SCORM oficial
+        // Si falla, buscar archivos HTML a lo bruto
         let puntoEntrada = '';
         const rutaManifest = path.join(rutaDescompresion, 'imsmanifest.xml');
 
@@ -58,23 +58,25 @@ exports.subirCurso = async (req, res) => {
             }
         }
 
+        // Fallback: buscar cualquier HTML si el manifest no ayudó
         if (!puntoEntrada) {
             console.log('🕵️‍♂️ Manifest no útil o inexistente. Usando búsqueda heurística de HTMLs...');
             const todosLosHtml = getHtmlFiles(rutaDescompresion, [], rutaDescompresion);
 
             if (todosLosHtml.length === 0) {
-                // Limpieza en error
+                // Limpiar el desastre si no encontramos nada
                 fs.rmSync(rutaDescompresion, { recursive: true, force: true });
                 fs.unlinkSync(zipPath);
                 return res.status(400).json({ mensaje: 'NO SE ENCONTRÓ NINGÚN HTML (ni en raíz ni en zips internos).' });
             }
 
+            // Priorizar nombres comunes de entrada
             const prioritarios = ['index.html', 'story.html', 'player.html', 'launcher.html'];
 
-            // A) Buscar un index.html en la raíz
+            // Primero buscar en la raíz
             puntoEntrada = todosLosHtml.find(f => prioritarios.includes(f));
 
-            // B) Buscar index.html dentro de carpetas
+            // Sino, buscar en subcarpetas
             if (!puntoEntrada) {
                 puntoEntrada = todosLosHtml.find(f => {
                     const nombre = f.split('/').pop();
@@ -82,7 +84,7 @@ exports.subirCurso = async (req, res) => {
                 });
             }
 
-            // C) Cualquiera
+            // En el peor caso, usar el primer HTML que encuentres
             if (!puntoEntrada) puntoEntrada = todosLosHtml[0];
             console.log('🎯 Punto de entrada encontrado por heurística:', puntoEntrada);
         }

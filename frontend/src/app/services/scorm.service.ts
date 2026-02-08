@@ -11,15 +11,15 @@ export class ScormService {
   private usuarioId: number = 0;
   private initialized: boolean = false;
 
-  // 🔥 Observable para enviar el progreso en tiempo real al Player
+  // BehaviorSubject para que el Player se suscriba y muestre progreso en vivo
   public progresoRealtime = new BehaviorSubject<number>(0);
 
-  // Simplificado: solo 3 hitos - 0%, 50%, 100%
-  private progresoGuardado: number = 0; // Ultimo progreso guardado
-  private progressMeasure: number = 0; // SCORM 2004 cmi.progress_measure (0-1)
+  // Solo guardamos en hitos importantes para no saturar la BD
+  private progresoGuardado: number = 0;
+  private progressMeasure: number = 0; // SCORM 2004: medida granular 0-1
   private sessionStartTime: number = 0;
 
-  // Cache de datos CMI
+  // Cache local de datos SCORM para comparar cambios antes de guardar
   private cmiData: any = {
     cmi_lesson_status: 'not attempted',
     cmi_score_raw: 0,
@@ -38,7 +38,7 @@ export class ScormService {
     this.startTime = Date.now();
     this.sessionStartTime = Date.now();
     this.initialized = false;
-    
+
     // Reiniciar tracking al abrir un curso nuevo
     this.progressMeasure = 0;
     this.progresoGuardado = 0;
@@ -70,17 +70,18 @@ export class ScormService {
       GetDiagnostic: (errorCode: string) => "No error"
     };
 
-    // Exponer en TODOS los lugares posibles donde SCORM puede buscar
+    // CRÍTICO: Los SCORMs buscan la API en diferentes ubicaciones
+    // Esto es especialmente importante cuando el curso corre en un iframe
     const win = window as any;
-    
-    // SCORM 1.2 - Múltiples ubicaciones
+
+    // SCORM 1.2 (case-sensitive, algunos cursos buscan 'API', otros 'api')
     win.API = apiObject;
     win.api = apiObject;
-    
-    // SCORM 2004
+
+    // SCORM 2004 usa un nombre de objeto diferente
     win.API_1484_11 = api2004Object;
-    
-    // También en el parent (muy importante para iframes)
+
+    // Cuando el SCORM está en iframe, busca en parent
     if (win.parent && win.parent !== win) {
       console.log('📢 Exponiendo API a window.parent');
       win.parent.API = apiObject;
@@ -88,7 +89,7 @@ export class ScormService {
       win.parent.API_1484_11 = api2004Object;
     }
 
-    // Y en top (también importante)
+    // Algunos cursos van directo a window.top
     if (win.top && win.top !== win) {
       try {
         console.log('📢 Exponiendo API a window.top');
@@ -96,6 +97,7 @@ export class ScormService {
         win.top.api = apiObject;
         win.top.API_1484_11 = api2004Object;
       } catch (e) {
+        // Cross-origin puede bloquear esto, no es crítico
         console.warn('⚠️ No se puede acceder a window.top (posible error de cross-origin):', e);
       }
     }
@@ -110,7 +112,7 @@ export class ScormService {
     console.log('   - window.API_1484_11 ✅');
     if (win.parent && win.parent !== win) console.log('   - window.parent.API ✅');
     if (win.top && win.top !== win) console.log('   - window.top.API ✅');
-    
+
     // 🆕 Iniciar guardado automático cada 10 segundos
     this.iniciarGuardadoAutomatico();
   }
@@ -121,7 +123,7 @@ export class ScormService {
     const tieneAPI_12 = !!(win.API || win.api);
     const tieneAPI_2004 = !!win.API_1484_11;
     const tieneParentAPI = !!(win.parent?.API || win.parent?.api || win.parent?.API_1484_11);
-    
+
     console.log(`
 ╔════════════════════════════════════════════╗
 ║         DIAGNÓSTICO DE SCORM                ║
@@ -150,7 +152,7 @@ Próximos pasos:
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
     }
-    
+
     // Solo guardar al detectar cambios (via LMSSetValue)
     // Ya no necesitamos guardado periodico con la logica de 3 hitos
   }
@@ -166,10 +168,10 @@ Próximos pasos:
   // Cargar estado inicial desde BD
   async cargarEstadoInicial(): Promise<void> {
     console.log(`📥 Cargando estado SCORM para usuario:${this.usuarioId} curso:${this.cursoId}`);
-    
+
     try {
       const data = await this.dataService.obtenerProgreso(this.usuarioId, this.cursoId).toPromise();
-      
+
       if (data && data.cmi_lesson_status) {
         this.cmiData = {
           cmi_lesson_status: data.cmi_lesson_status || 'not attempted',
@@ -178,10 +180,10 @@ Próximos pasos:
           cmi_suspend_data: data.cmi_suspend_data || ''
         };
         console.log('✅ Estado SCORM recuperado:', this.cmiData);
-        
+
         // 🆕 Restaurar páginas visitadas desde suspend_data
         this.restaurarProgresoGuardado();
-        
+
         // Calcular progreso inicial basado en lo recuperado
         this.calcularProgresoMultiFuente();
       } else {
@@ -200,17 +202,17 @@ Próximos pasos:
     try {
       if (this.cmiData.cmi_suspend_data) {
         const suspendData = this.parseSuspendData(this.cmiData.cmi_suspend_data);
-        
+
         // Restaurar progress_measure
         if (suspendData._tracking?.progressMeasure) {
           this.progressMeasure = suspendData._tracking.progressMeasure;
         }
-        
+
         // Restaurar ultimo progreso guardado
         if (suspendData._tracking?.progresoGuardado) {
           this.progresoGuardado = suspendData._tracking.progresoGuardado;
         }
-        
+
         console.log('Tracking restaurado:', {
           progressMeasure: this.progressMeasure,
           progresoGuardado: this.progresoGuardado
@@ -236,59 +238,60 @@ Próximos pasos:
   private guardarTrackingEnSuspendData(): void {
     try {
       let suspendObj = this.parseSuspendData(this.cmiData.cmi_suspend_data);
-      
+
       // Agregar o actualizar nuestro tracking
       suspendObj._tracking = {
         progressMeasure: this.progressMeasure,
         progresoGuardado: this.progresoGuardado,
         ultimaActualizacion: new Date().toISOString()
       };
-      
+
       this.cmiData.cmi_suspend_data = JSON.stringify(suspendObj);
     } catch (e) {
       console.warn('Error guardando tracking');
     }
   }
 
-  // Logica simplificada: solo 0%, 50%, 100%
+  // Cálculo simplificado de progreso basado en status SCORM
+  // Solo distinguimos entre: no iniciado (0%), en progreso (50%), completado (100%)
+  // Esto evita saturar la BD con updates de cada 1% de progreso
   private calcularProgresoMultiFuente(): void {
     let porcentaje = 0;
     const status = this.cmiData.cmi_lesson_status;
     const rawScore = parseFloat(this.cmiData.cmi_score_raw);
-    
-    // COMPLETADO = 100%
+
     if (status === 'completed' || status === 'passed') {
       porcentaje = 100;
     }
-    // EN PROGRESO = 50%
+    // Cualquier indicador de actividad cuenta como "en progreso"
     else if (status === 'incomplete' || this.progressMeasure > 0 || rawScore > 0) {
       porcentaje = 50;
     }
-    // NO INICIADO = 0%
     else {
       porcentaje = 0;
     }
-    
+
     console.log('Progreso calculado: ' + porcentaje + '% (status=' + status + ')');
-    
+
     this.progresoRealtime.next(porcentaje);
   }
 
-  // Determinar si debemos guardar este progreso (solo en hitos: 0%, 50%, 100%)
+  // Solo guardamos en hitos importantes (0%, 50%, 100%)
+  // Esto reduce la carga en el backend y evita race conditions
   private debeGuardarProgreso(): boolean {
     const progresoActual = this.progresoRealtime.getValue();
-    
+
     // Siempre guardar el primer cambio (0%)
     if (this.progresoGuardado === 0 && (progresoActual === 0 || progresoActual === 50)) {
       return true;
     }
-    
+
     // Guardar transicion 0 -> 50 o 50 -> 100
     if (progresoActual > this.progresoGuardado) {
       this.progresoGuardado = progresoActual;
       return true;
     }
-    
+
     // No guardar si no hay cambio significativo
     return false;
   }
@@ -300,14 +303,14 @@ Próximos pasos:
     console.log('   Parámetro:', param);
     console.log('   Usuario:', this.usuarioId);
     console.log('   Curso:', this.cursoId);
-    
+
     if (!this.initialized) {
       this.initialized = true;
       this.startTime = Date.now();
       this.sessionStartTime = Date.now();
-      
+
       console.log('✅ SCORM inicializado correctamente');
-      
+
       if (this.cmiData.cmi_lesson_status === 'not attempted') {
         this.cmiData.cmi_lesson_status = 'incomplete';
         // 🆕 Guardar inmediatamente cuando se inicia
@@ -352,7 +355,7 @@ Próximos pasos:
     if (mapped !== element) {
       return this.LMSGetValue(mapped);
     }
-    
+
     // Elementos específicos de SCORM 2004
     switch (element) {
       case 'cmi.progress_measure': return String(this.progressMeasure);
@@ -398,16 +401,16 @@ Próximos pasos:
         }
         break;
     }
-    
+
     // Recalcular progreso después de cualquier cambio
     this.calcularProgresoMultiFuente();
-    
+
     return "true";
   }
 
   private LMSSetValue2004(element: string, value: string): string {
     console.log(`📝 SCORM 2004 Set: ${element} = ${value}`);
-    
+
     // Elementos específicos de SCORM 2004
     switch (element) {
       case 'cmi.progress_measure':
@@ -420,7 +423,7 @@ Próximos pasos:
           this.guardarEnBD();
         }
         return "true";
-        
+
       case 'cmi.completion_status':
         console.log(`✅ COMPLETION_STATUS: ${value}`);
         if (value === 'completed') {
@@ -431,7 +434,7 @@ Próximos pasos:
         this.calcularProgresoMultiFuente();
         this.guardarEnBD();
         return "true";
-        
+
       case 'cmi.success_status':
         console.log(`🏆 SUCCESS_STATUS: ${value}`);
         if (value === 'passed') {
@@ -443,7 +446,7 @@ Próximos pasos:
         this.guardarEnBD();
         return "true";
     }
-    
+
     // Mapear a SCORM 1.2 para el resto
     const mapped = this.map2004to12(element);
     return this.LMSSetValue(mapped, value);
@@ -464,7 +467,7 @@ Próximos pasos:
 
     // Asegurar que el tracking este guardado
     this.guardarTrackingEnSuspendData();
-    
+
     // Log detallado antes de guardar
     const progresoActual = this.progresoRealtime.getValue();
     console.log('Guardando progreso en BD:', {
@@ -474,7 +477,7 @@ Próximos pasos:
       porcentaje: progresoActual + '%',
       timestamp: new Date().toISOString()
     });
-    
+
     // Guardamos en backend
     this.dataService.guardarProgreso(this.usuarioId, this.cursoId, this.cmiData).subscribe({
       next: () => {
@@ -516,7 +519,7 @@ Próximos pasos:
   getEstadoActual(): any {
     return { ...this.cmiData };
   }
-  
+
   // 🆕 Obtener el porcentaje actual calculado
   getProgresoActual(): number {
     return this.progresoRealtime.getValue();
