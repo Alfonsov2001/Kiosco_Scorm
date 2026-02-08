@@ -33,6 +33,11 @@ export class DashboardComponent implements OnInit {
   cargando: boolean = false;
   cursoSeleccionado: any = null;
 
+  // Estado de descarga
+  descargando: boolean = false;
+  descargaExitosa: boolean = false;
+  mensajeErrorDescarga: string = '';
+
   // Filtros
   searchTitulo: string = '';
   categoriaSeleccionada: string = '';
@@ -199,6 +204,13 @@ export class DashboardComponent implements OnInit {
 
   cerrarDetalle() {
     this.cursoSeleccionado = null;
+    this.limpiarEstadoDescarga();
+  }
+
+  limpiarEstadoDescarga() {
+    this.descargando = false;
+    this.descargaExitosa = false;
+    this.mensajeErrorDescarga = '';
   }
 
   iniciarCurso(curso: any) {
@@ -208,7 +220,10 @@ export class DashboardComponent implements OnInit {
 
   descargarCurso(curso: any): void {
     if (!curso || !curso.id) return;
-    
+
+    this.limpiarEstadoDescarga();
+    this.descargando = true;
+
     this.dataService.descargarCurso(curso.id).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -217,22 +232,38 @@ export class DashboardComponent implements OnInit {
         link.download = `${curso.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.zip`;
         link.click();
         window.URL.revokeObjectURL(url);
+
+        this.descargando = false;
+        this.descargaExitosa = true;
+        this.cd.detectChanges();
+
+        // Ocultar mensaje de éxito después de 5 segundos
+        setTimeout(() => {
+          this.descargaExitosa = false;
+          this.cd.detectChanges();
+        }, 5000);
       },
       error: (err) => {
         console.error('Error al descargar:', err);
+        this.descargando = false;
+        this.descargaExitosa = false;
+
         if (err.error instanceof Blob) {
           const reader = new FileReader();
           reader.onload = () => {
             try {
               const errorObj = JSON.parse(reader.result as string);
-              alert('Error al descargar: ' + (errorObj.mensaje || 'Error desconocido'));
+              this.mensajeErrorDescarga = errorObj.mensaje || 'Error desconocido';
+              this.cd.detectChanges();
             } catch (e) {
-              alert('No se pudo descargar el curso.');
+              this.mensajeErrorDescarga = 'No se pudo descargar el curso.';
+              this.cd.detectChanges();
             }
           };
           reader.readAsText(err.error);
         } else {
-          alert('No se pudo descargar el curso.');
+          this.mensajeErrorDescarga = 'No se pudo descargar el curso.';
+          this.cd.detectChanges();
         }
       }
     });

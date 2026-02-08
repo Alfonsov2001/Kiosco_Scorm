@@ -103,9 +103,27 @@
             <div class="col-md-8">
               <p class="lead">{{ cursoSeleccionado.descripcion || 'Sin descripción disponible.' }}</p>
               <div *ngIf="cursoSeleccionado.archivos_presentes === false" class="alert alert-warning py-2 small">
-                <i class="bi bi-exclamation-triangle-fill"></i> <strong>Atención:</strong> Este curso no se puede iniciar porque sus archivos no están disponibles en el servidor.
+                <i class="bi bi-exclamation-triangle-fill"></i> <strong>Atención:</strong> Este curso no se puede
+                iniciar porque sus archivos no están disponibles en el servidor.
               </div>
               <hr>
+
+              <!-- ALERTAS DE DESCARGA -->
+              <div *ngIf="descargando" class="alert alert-info d-flex align-items-center" role="alert">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                <div>Descargando paquete SCORM... por favor espere.</div>
+              </div>
+
+              <div *ngIf="descargaExitosa" class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>Curso descargado con éxito.</div>
+              </div>
+
+              <div *ngIf="mensajeErrorDescarga" class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ mensajeErrorDescarga }}</div>
+              </div>
+
               <div class="progress-detail mb-4">
                 <div class="d-flex align-items-center gap-3 mb-3">
                   <span class="badge-estado" [ngClass]="getEstadoClase(cursoSeleccionado.estado)">
@@ -128,13 +146,16 @@
                   </div>
                 </div>
               </div>
-              <div class="d-flex gap-2">
-                <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)" [disabled]="cursoSeleccionado.archivos_presentes === false">
+              <div class="d-flex flex-wrap gap-4">
+                <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)"
+                  [disabled]="cursoSeleccionado.archivos_presentes === false">
                   <i class="bi" [ngClass]="getBotonIcono(cursoSeleccionado)"></i>
                   {{ getBotonTexto(cursoSeleccionado) }}
                 </button>
-                <button class="btn btn-outline-info btn-lg" (click)="descargarCurso(cursoSeleccionado)" [disabled]="cursoSeleccionado.archivos_presentes === false">
-                  <i class="bi bi-download"></i> Descargar SCORM
+                <button class="btn btn-outline-info btn-lg" (click)="descargarCurso(cursoSeleccionado)"
+                  [disabled]="cursoSeleccionado.archivos_presentes === false || descargando">
+                  <i class="bi" [ngClass]="descargando ? 'bi-hourglass-split' : 'bi-download'"></i>
+                  {{ descargando ? 'Descargando...' : 'Descargar SCORM' }}
                 </button>
                 <button class="btn btn-secondary btn-lg" (click)="cerrarDetalle()">Volver</button>
               </div>

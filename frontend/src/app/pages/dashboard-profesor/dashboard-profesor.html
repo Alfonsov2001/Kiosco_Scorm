@@ -108,6 +108,22 @@
                 {{ errorMensaje }}
               </div>
 
+              <!-- ALERTAS DE DESCARGA -->
+              <div *ngIf="descargando" class="alert alert-info d-flex align-items-center" role="alert">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                <div>Descargando paquete SCORM... por favor espere.</div>
+              </div>
+
+              <div *ngIf="descargaExitosa" class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>Curso descargado con éxito.</div>
+              </div>
+
+              <div *ngIf="mensajeErrorDescarga" class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ mensajeErrorDescarga }}</div>
+              </div>
+
               <!-- CONFIRMACIÓN DE ELIMINACIÓN -->
               <div *ngIf="confirmandoEliminacion" class="alert alert-warning py-3 mb-3" role="alert">
                 <p class="mb-2"><strong>⚠️ ¿Estás seguro?</strong></p>
@@ -122,19 +138,20 @@
               </div>
 
               <!-- BOTONES DE ACCIÓN -->
-              <div *ngIf="!confirmandoEliminacion">
+              <div *ngIf="!confirmandoEliminacion" class="d-flex flex-wrap gap-4">
                 <button class="btn btn-primary btn-lg" (click)="iniciarCurso(cursoSeleccionado)"
                   [disabled]="cursoSeleccionado.archivos_presentes === false">
                   <i class="bi bi-play-circle"></i> Iniciar Curso
                 </button>
-                <button class="btn btn-danger btn-lg ms-2" (click)="solicitarConfirmacionEliminacion()">
+                <button class="btn btn-danger btn-lg" (click)="solicitarConfirmacionEliminacion()">
                   <i class="bi bi-trash"></i> Eliminar
                 </button>
-                <button class="btn btn-outline-info btn-lg ms-2" (click)="descargarCurso(cursoSeleccionado)"
-                  [disabled]="cursoSeleccionado.archivos_presentes === false">
-                  <i class="bi bi-download"></i> Descargar SCORM
+                <button class="btn btn-outline-info btn-lg" (click)="descargarCurso(cursoSeleccionado)"
+                  [disabled]="cursoSeleccionado.archivos_presentes === false || descargando">
+                  <i class="bi" [ngClass]="descargando ? 'bi-hourglass-split' : 'bi-download'"></i>
+                  {{ descargando ? 'Descargando...' : 'Descargar SCORM' }}
                 </button>
-                <button class="btn btn-secondary btn-lg ms-2" (click)="cerrarDetalle()">Volver</button>
+                <button class="btn btn-secondary btn-lg" (click)="cerrarDetalle()">Volver</button>
               </div>
             </div>
             <div class="col-md-4 text-center">
@@ -194,14 +211,12 @@
               <div class="card-body">
                 <h5 class="card-title">{{ c.titulo }}</h5>
                 <p class="card-text text-muted text-truncate">{{ c.descripcion || 'Curso SCORM interactivo' }}</p>
-                
+
                 <!-- 🆕 Barra de Progreso Gradual -->
                 <div class="progress mt-2" style="height: 8px; border-radius: 4px;">
-                  <div class="progress-bar" role="progressbar" 
-                       [style.width.%]="c.porcentaje || 0"
-                       [style.backgroundColor]="getProgresoColor(c.porcentaje || 0)"
-                       [attr.aria-valuenow]="c.porcentaje || 0"
-                       aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar" role="progressbar" [style.width.%]="c.porcentaje || 0"
+                    [style.backgroundColor]="getProgresoColor(c.porcentaje || 0)"
+                    [attr.aria-valuenow]="c.porcentaje || 0" aria-valuemin="0" aria-valuemax="100">
                   </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-1">
