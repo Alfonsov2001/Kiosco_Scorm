@@ -5,7 +5,7 @@
 ![Angular](https://img.shields.io/badge/Angular-21.0-red.svg)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green.svg)
 
-Sistema completo de gestión de aprendizaje (LMS) con soporte para paquetes SCORM 1.2 y 2004 diseñado para instituciones educativas y empresas que necesitan administrar y distribuir contenido educativo interactivo.
+Kiosco de paquetes SCORM para que las instituciones educativas puedan ver los cursos antes de introducirlo en el LMS
 
 ## 📋 Tabla de Contenidos
 
@@ -20,14 +20,14 @@ Sistema completo de gestión de aprendizaje (LMS) con soporte para paquetes SCOR
 - [Contribuir](#-contribuir)
 - [Licencia](#-licencia)
 
-## ✨ Características
+## �?Características
 
 ### Para Profesores
 - 📤 **Subida de Cursos SCORM**: Importación automática de paquetes SCORM 1.2 y 2004 en formato ZIP
 - 📊 **Dashboard de Profesor**: Visualización del progreso de todos los estudiantes
-- 🗂️ **Gestión de Categorías**: Organización de cursos por categorías personalizadas
+- 🗂�?**Gestión de Categorías**: Organización de cursos por categorías personalizadas
 - 📈 **Seguimiento de Progreso**: Monitoreo en tiempo real del avance de cada alumno
-- 🔄 **Gestión de Cursos**: Crear, editar y eliminar cursos
+- 🔄 **Gestión de Cursos**: Crear, filtrar y eliminar cursos
 
 ### Para Estudiantes
 - 🎯 **Catálogo de Cursos**: Navegación intuitiva por cursos disponibles
@@ -37,14 +37,14 @@ Sistema completo de gestión de aprendizaje (LMS) con soporte para paquetes SCOR
 - 🔐 **Perfil Personal**: Gestión de información de usuario
 
 ### Características Técnicas
-- ✅ **SCORM 1.2 Compliant**: Implementación completa de la API SCORM 1.2
-- ✅ **SCORM 2004 Compliant**: Implementación completa de la API SCORM 2004
+- �?**SCORM 1.2 Compliant**: Implementación completa de la API SCORM 1.2
+- �?**SCORM 2004 Compliant**: Implementación completa de la API SCORM 2004
 - 🔒 **Sistema de Autenticación**: Login basado en email con roles (profesor/alumno)
 - 📱 **Diseño Responsivo**: Interfaz adaptable a todos los dispositivos
 - 🎨 **UI Moderna**: Diseño limpio con Bootstrap 5 y animaciones suaves
 - 🚀 **Alto Rendimiento**: Optimizado para carga rápida y experiencia fluida
 
-## 🛠️ Tecnologías
+## 🛠�?Tecnologías
 
 ### Frontend
 - **Angular 21**: Framework principal
@@ -216,38 +216,38 @@ El sistema automáticamente:
 ```
 Kiosco_Scorm/
 ├── backend/                    # Servidor Node.js/Express
-│   ├── src/
-│   │   ├── config/            # Configuración DB
-│   │   ├── controllers/       # Lógica de negocio
-│   │   ├── models/           # Modelos de datos
-│   │   └── routes/           # Rutas de la API
-│   ├── public/               # Archivos estáticos
-│   │   └── cursos/          # Cursos SCORM descomprimidos
-│   ├── uploads/             # Imágenes de cursos
-│   ├── app.js              # Punto de entrada
-│   └── package.json
-│
+�?  ├── src/
+�?  �?  ├── config/            # Configuración DB
+�?  �?  ├── controllers/       # Lógica de negocio
+�?  �?  ├── models/           # Modelos de datos
+�?  �?  └── routes/           # Rutas de la API
+�?  ├── public/               # Archivos estáticos
+�?  �?  └── cursos/          # Cursos SCORM descomprimidos
+�?  ├── uploads/             # Imágenes de cursos
+�?  ├── app.js              # Punto de entrada
+�?  └── package.json
+�?
 ├── frontend/                  # Aplicación Angular
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/
-│   │   │   │   ├── dashboard/      # Dashboard de alumno
-│   │   │   │   ├── header/         # Barra de navegación
-│   │   │   │   ├── sidebar/        # Menú lateral
-│   │   │   │   ├── login/          # Pantalla de login
-│   │   │   │   ├── player/         # Reproductor SCORM
-│   │   │   │   └── upload/         # Subida de cursos
-│   │   │   ├── pages/
-│   │   │   │   └── dashboard-profesor/  # Vista profesor
-│   │   │   ├── services/
-│   │   │   │   ├── data.service.ts      # Servicio HTTP
-│   │   │   │   └── scorm.service.ts     # API SCORM
-│   │   │   ├── layout/                   # Layout general
-│   │   │   └── app.routes.ts            # Rutas
-│   │   ├── assets/          # Recursos estáticos
-│   │   └── styles/          # Estilos globales
-│   └── package.json
-│
+�?  ├── src/
+�?  �?  ├── app/
+�?  �?  �?  ├── components/
+�?  �?  �?  �?  ├── dashboard/      # Dashboard de alumno
+�?  �?  �?  �?  ├── header/         # Barra de navegación
+�?  �?  �?  �?  ├── sidebar/        # Menú lateral
+�?  �?  �?  �?  ├── login/          # Pantalla de login
+�?  �?  �?  �?  ├── player/         # Reproductor SCORM
+�?  �?  �?  �?  └── upload/         # Subida de cursos
+�?  �?  �?  ├── pages/
+�?  �?  �?  �?  └── dashboard-profesor/  # Vista profesor
+�?  �?  �?  ├── services/
+�?  �?  �?  �?  ├── data.service.ts      # Servicio HTTP
+�?  �?  �?  �?  └── scorm.service.ts     # API SCORM
+�?  �?  �?  ├── layout/                   # Layout general
+�?  �?  �?  └── app.routes.ts            # Rutas
+�?  �?  ├── assets/          # Recursos estáticos
+�?  �?  └── styles/          # Estilos globales
+�?  └── package.json
+�?
 ├── kiosco_scorm.sql         # Script de base de datos
 └── README.md               # Este archivo
 ```
@@ -309,8 +309,8 @@ Las contribuciones son bienvenidas. Para contribuir:
 ### Compatibilidad SCORM
 
 Este sistema soporta:
-- ✅ SCORM 1.2
-- ✅ SCORM 2004
+- �?SCORM 1.2
+- �?SCORM 2004
 
 ### Seguridad
 
@@ -336,7 +336,10 @@ Este proyecto está bajo la Licencia ISC.
 
 ## 👥 Autores
 
-**Alfonso** - [Alfonsov2001](https://github.com/Alfonsov2001)
+**Alfonso Valenzuela Rivero**
+**David Valdivia Guillén**
+**Francisco García Partida**
+**Javier Parreño Garrido**
 
 ## 📞 Soporte
 
@@ -346,4 +349,4 @@ Si encuentras algún problema o tienes sugerencias:
 
 ---
 
-⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!
+�?Si este proyecto te fue útil, considera darle una estrella en GitHub!
