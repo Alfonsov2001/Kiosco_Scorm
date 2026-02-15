@@ -1,4 +1,4 @@
-# 🎓 Kiosco SCORM - Sistema de Gestión de Aprendizaje
+# Kiosco SCORM - Sistema de Gestión de Aprendizaje
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-ISC-green.svg)
@@ -7,7 +7,7 @@
 
 Kiosco de paquetes SCORM para que las instituciones educativas puedan ver los cursos antes de introducirlo en el LMS
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
 - [Características](#-características)
 - [Tecnologías](#-tecnologías)
@@ -20,31 +20,30 @@ Kiosco de paquetes SCORM para que las instituciones educativas puedan ver los cu
 - [Contribuir](#-contribuir)
 - [Licencia](#-licencia)
 
-## �?Características
+## Características
 
 ### Para Profesores
-- 📤 **Subida de Cursos SCORM**: Importación automática de paquetes SCORM 1.2 y 2004 en formato ZIP
-- 📊 **Dashboard de Profesor**: Visualización del progreso de todos los estudiantes
-- 🗂�?**Gestión de Categorías**: Organización de cursos por categorías personalizadas
-- 📈 **Seguimiento de Progreso**: Monitoreo en tiempo real del avance de cada alumno
-- 🔄 **Gestión de Cursos**: Crear, filtrar y eliminar cursos
+- **Subida de Cursos SCORM**: Importación automática de paquetes SCORM 1.2 y 2004 en formato ZIP
+- **Gestión de Categorías**: Organización de cursos por categorías personalizadas
+- **Seguimiento de Progreso**: Monitoreo en tiempo real del avance de cada alumno
+- **Gestión de Cursos**: Crear, filtrar y eliminar cursos
 
 ### Para Estudiantes
-- 🎯 **Catálogo de Cursos**: Navegación intuitiva por cursos disponibles
-- 📚 **Reproductor SCORM**: Player integrado compatible con SCORM 1.2 y 2004
-- 📊 **Seguimiento Personal**: Visualización del progreso individual en cada curso
-- 💾 **Guardado Automático**: Persistencia automática del progreso y estado
-- 🔐 **Perfil Personal**: Gestión de información de usuario
+- **Catálogo de Cursos**: Navegación intuitiva por cursos disponibles
+- **Reproductor SCORM**: Player integrado compatible con SCORM 1.2 y 2004
+- **Seguimiento Personal**: Visualización del progreso individual en cada curso
+- **Guardado Automático**: Persistencia automática del progreso y estado
+- **Perfil Personal**: Gestión de información de usuario
 
 ### Características Técnicas
-- �?**SCORM 1.2 Compliant**: Implementación completa de la API SCORM 1.2
-- �?**SCORM 2004 Compliant**: Implementación completa de la API SCORM 2004
-- 🔒 **Sistema de Autenticación**: Login basado en email con roles (profesor/alumno)
-- 📱 **Diseño Responsivo**: Interfaz adaptable a todos los dispositivos
-- 🎨 **UI Moderna**: Diseño limpio con Bootstrap 5 y animaciones suaves
-- 🚀 **Alto Rendimiento**: Optimizado para carga rápida y experiencia fluida
+- **SCORM 1.2 Compliant**: Implementación completa de la API SCORM 1.2
+- **SCORM 2004 Compliant**: Implementación completa de la API SCORM 2004
+- **Sistema de Autenticación**: Login basado en email con roles (profesor/alumno)
+- **Diseño Responsivo**: Interfaz adaptable a todos los dispositivos
+- **UI Moderna**: Diseño limpio con Bootstrap 5 y animaciones suaves
+- **Alto Rendimiento**: Optimizado para carga rápida y experiencia fluida
 
-## 🛠�?Tecnologías
+## Tecnologías
 
 ### Frontend
 - **Angular 21**: Framework principal
@@ -64,7 +63,7 @@ Kiosco de paquetes SCORM para que las instituciones educativas puedan ver los cu
 - **XAMPP**: Entorno de desarrollo local
 - **NPM**: Gestión de paquetes
 
-## 📦 Requisitos Previos
+## Requisitos Previos
 
 Asegúrate de tener instalado lo siguiente:
 
@@ -73,7 +72,7 @@ Asegúrate de tener instalado lo siguiente:
 - **XAMPP** (con MySQL activo) - [Descargar](https://www.apachefriends.org/)
 - **Git** - [Descargar](https://git-scm.com/)
 
-## 🚀 Instalación
+## Instalación
 
 ### 1. Clonar el Repositorio
 
@@ -132,7 +131,7 @@ cd ../frontend
 npm install
 ```
 
-## ⚙️ Configuración
+## Configuración
 
 ### Backend
 
@@ -153,7 +152,7 @@ El frontend utiliza un proxy para conectarse al backend. La configuración está
 }
 ```
 
-## 🎯 Uso
+## Uso
 
 ### Iniciar el Backend
 
@@ -211,7 +210,7 @@ El sistema automáticamente:
 4. El reproductor SCORM cargará el contenido
 5. Tu progreso se guardará automáticamente
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Kiosco_Scorm/
@@ -252,7 +251,7 @@ Kiosco_Scorm/
 └── README.md               # Este archivo
 ```
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Autenticación
 
@@ -287,7 +286,7 @@ PUT    /api/progreso/:usuarioId/:cursoId   - Actualizar progreso
 POST   /api/progreso/reset                 - Reiniciar progreso
 ```
 
-## 🤝 Contribuir
+## Contribuir
 
 Las contribuciones son bienvenidas. Para contribuir:
 
@@ -304,17 +303,17 @@ Las contribuciones son bienvenidas. Para contribuir:
 - **Commits**: Mensajes descriptivos en español
 - **Documentación**: Comentar código complejo
 
-## 📝 Notas Adicionales
+## Notas Adicionales
 
 ### Compatibilidad SCORM
 
 Este sistema soporta:
-- �?SCORM 1.2
-- �?SCORM 2004
+- SCORM 1.2
+- SCORM 2004
 
 ### Seguridad
 
-> ⚠️ **Nota Importante**: Esta versión es un prototipo educativo. Para producción, considera implementar:
+> **Nota Importante**: Esta versión es un prototipo educativo. Para producción, considera implementar:
 > - Autenticación con contraseñas hash (bcrypt)
 > - Tokens JWT para sesiones
 > - Validación de inputs más robusta
@@ -330,18 +329,18 @@ Para optimizar en producción:
 - Optimizar consultas SQL con índices
 - Implementar CDN para assets
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia ISC.
 
-## 👥 Autores
+## Autores
 
 **Alfonso Valenzuela Rivero**
 **David Valdivia Guillén**
 **Francisco García Partida**
 **Javier Parreño Garrido**
 
-## 📞 Soporte
+## Soporte
 
 Si encuentras algún problema o tienes sugerencias:
 - Abre un [Issue](https://github.com/Alfonsov2001/Kiosco_Scorm/issues)
@@ -349,4 +348,3 @@ Si encuentras algún problema o tienes sugerencias:
 
 ---
 
-�?Si este proyecto te fue útil, considera darle una estrella en GitHub!
